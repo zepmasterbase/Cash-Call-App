@@ -11,7 +11,6 @@
       /* lighter theme */
       --bg-1: #eaf6ff;
       --bg-2: #f7fbff;
-      --card-bg: rgba(4,18,30,0.04);
       --muted:#4b6272;
       --accent-a:#00bcd4;
       --accent-b:#8450ff;
@@ -71,9 +70,6 @@
 
     .divider{ text-align:center; color:var(--muted); font-size:13px; margin:8px 0; }
 
-    .socials{ display:flex; gap:10px; }
-    .social{ flex:1; padding:10px; border-radius:10px; border:1px solid rgba(6,32,44,0.04); background:transparent; text-align:center; font-weight:700; color:var(--muted); }
-
     footer{ margin-top:12px; color:var(--muted); text-align:center; font-size:13px; }
 
     @media (max-width:380px){ .hero-title{ font-size:20px } }
@@ -102,15 +98,13 @@
       </div>
     </header>
 
-    <!-- collapsible country panel -->
+    <!-- collapsible country panel (kept for quick country change) -->
     <div id="countryPanel" style="display:none; margin-bottom:8px; gap:8px;">
       <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Region</label>
       <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);width:100%;background:transparent;color:#06202b;font-weight:700;">
-        <option value="za">South Africa</option>
-        <option value="gh">Ghana</option>
-        <option value="ng">Nigeria</option>
-        <option value="uk">United Kingdom</option>
-        <option value="us">United States</option>
+        <option value="za" data-default-currency="ZAR">South Africa</option>
+        <option value="gh" data-default-currency="GHS">Ghana</option>
+        <option value="ng" data-default-currency="NGN">Nigeria</option>
       </select>
     </div>
 
@@ -140,6 +134,26 @@
             <div class="hint">Use the phone number you'll receive payment links on.</div>
           </div>
 
+          <div class="form-row">
+            <label for="country">Country</label>
+            <select id="country" name="country" required>
+              <option value="za" data-default-currency="ZAR">South Africa</option>
+              <option value="gh" data-default-currency="GHS">Ghana</option>
+              <option value="ng" data-default-currency="NGN">Nigeria</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="currency">Currency (wallet)</label>
+            <select id="currency" name="currency" required>
+              <option value="NGN">Naira (NGN)</option>
+              <option value="ZAR">Rand (ZAR)</option>
+              <option value="GHS">Cedi (GHS)</option>
+              <option value="USD">US Dollar (USD)</option>
+            </select>
+            <div class="hint">Default currency is picked from your country but you can change it.</div>
+          </div>
+
           <div class="form-row pw-toggle">
             <label for="password">Password</label>
             <input id="password" name="password" type="password" placeholder="Create a password" minlength="8" required>
@@ -159,9 +173,9 @@
 
           <div class="divider">or sign up with</div>
 
-          <div class="socials">
-            <button type="button" class="social" onclick="alert('Continue with Google (demo)')">Google</button>
-            <button type="button" class="social" onclick="alert('Continue with Apple (demo)')">Apple</button>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="button" class="social" style="flex:1" onclick="alert('Continue with Google (demo)')">Google</button>
+            <button type="button" class="social" style="flex:1" onclick="alert('Continue with Apple (demo)')">Apple</button>
           </div>
         </form>
       </section>
@@ -171,20 +185,55 @@
   </div>
 
   <script>
-    // dynamic year placeholder (not shown here, but useful if added)
-    // country panel toggle
+    // small helper to create a demo token
+    function makeToken() {
+      return 'tok_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    // map default currency by country
+    const countryToCurrency = { ng: 'NGN', za: 'ZAR', gh: 'GHS' };
+
+    // elements
+    const countrySelectInline = document.getElementById('countrySelect'); // header panel select
     const countryBtn = document.getElementById('countryBtn');
     const countryPanel = document.getElementById('countryPanel');
+
+    const country = document.getElementById('country');      // main form country select
+    const currency = document.getElementById('currency');
+    const pw = document.getElementById('password');
+    const toggle = document.getElementById('togglePw');
+    const form = document.getElementById('signupForm');
+
+    // toggle header country panel
     countryBtn.addEventListener('click', () => {
       const open = countryPanel.style.display !== 'block';
       countryPanel.style.display = open ? 'block' : 'none';
       countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) document.getElementById('countrySelect').focus();
+      if (open) countrySelectInline.focus();
     });
 
+    // when header inline country changes, propagate to main form and update currency default
+    countrySelectInline.addEventListener('change', (e) => {
+      const v = e.target.value;
+      country.value = v;
+      // set currency default for country
+      const def = countryToCurrency[v] || 'USD';
+      currency.value = def;
+    });
+
+    // when main country select changes, update header inline select & prefered currency
+    country.addEventListener('change', (e) => {
+      const v = e.target.value;
+      if (countrySelectInline) countrySelectInline.value = v;
+      const def = countryToCurrency[v] || 'USD';
+      // only change currency if user hasn't manually changed it - we detect by checking a flag
+      if (!currency.dataset.userChanged) currency.value = def;
+    });
+
+    // detect manual currency change
+    currency.addEventListener('change', () => currency.dataset.userChanged = '1');
+
     // password show/hide
-    const pw = document.getElementById('password');
-    const toggle = document.getElementById('togglePw');
     toggle.addEventListener('click', () => {
       const isPwd = pw.type === 'password';
       pw.type = isPwd ? 'text' : 'password';
@@ -192,24 +241,54 @@
       toggle.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
     });
 
-    // simple demo validation + submit handler
-    const form = document.getElementById('signupForm');
+    // demo signup: client-side "auth", store user + wallet in localStorage, redirect to dashboard.html
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!form.checkValidity()) {
-        alert('Please fill out required fields correctly.');
+        form.reportValidity();
         return;
       }
-      // demo action — replace with real API call
+
       const data = {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value,
+        name: form.name.value.trim(),
+        email: form.email.value.trim().toLowerCase(),
+        phone: form.phone.value.trim(),
+        country: form.country.value,
+        currency: form.currency.value,
+        createdAt: new Date().toISOString(),
       };
-      console.log('Signup data (demo):', data);
-      alert('Account created (demo). Check your email to verify.');
-      location.href = 'login.html';
+
+      // very small demo "auth" check — in real app, call your server here
+      // create token and store user
+      const token = makeToken();
+      const user = { ...data, id: 'user_' + Math.random().toString(36).slice(2) };
+
+      // set up initial wallet: demo balance 0.00 in chosen currency
+      const wallet = {
+        userId: user.id,
+        currency: data.currency,
+        balance: 0.00,
+        updatedAt: new Date().toISOString()
+      };
+
+      // persist (demo) to localStorage
+      localStorage.setItem('cashcall_token', token);
+      localStorage.setItem('cashcall_user', JSON.stringify(user));
+      localStorage.setItem('cashcall_wallet', JSON.stringify(wallet));
+
+      // Redirect to dashboard (client-side)
+      // dashboard.html should read localStorage keys above to show wallet currency & balance
+      window.location.href = 'dashboard.html';
     });
+
+    // populate initial defaults: pick country from header select if present
+    (function initDefaults(){
+      // set form country from header inline select if present
+      if (countrySelectInline && country) country.value = countrySelectInline.value || country.value;
+      // set currency default based on country
+      const def = countryToCurrency[country.value] || 'USD';
+      currency.value = def;
+    })();
   </script>
 </body>
 </html>
