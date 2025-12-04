@@ -3,188 +3,159 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>CashCall — Log in</title>
-  <meta name="description" content="Log in to CashCall to manage payments." />
+  <title>CashCall — Dashboard</title>
+  <meta name="description" content="CashCall dashboard — wallet balance, quick actions and transaction history." />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
+    /* Mobile-first, clean & modern */
     :root{
-      --bg-1:#f3fbff; --bg-2:#ffffff;
-      --accent-a:#00bcd4; --accent-b:#8450ff; --muted:#4b6272;
+      --bg-1:#eef6fb;
+      --bg-2:#ffffff;
+      --card:#ffffff;
+      --muted:#50636f;
+      --accent-a:#00bcd4;
+      --accent-b:#8450ff;
+      --glass: rgba(255,255,255,0.8);
+      --radius:14px;
+      --maxw:420px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
-    body{
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
-      color:#06202b;
-      padding:18px 14px;
-      -webkit-font-smoothing:antialiased;
-    }
-    .wrap{ max-width:420px; margin:0 auto; }
+    html,body{height:100%; margin:0; padding:0; background: linear-gradient(180deg,var(--bg-1),var(--bg-2)); font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-font-smoothing:antialiased;}
+    body{ padding:18px; color:#072033; -webkit-text-size-adjust:100%; }
+
+    .wrap{ max-width:var(--maxw); margin:0 auto; }
 
     header{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 12px; border-radius:12px; background: rgba(255,255,255,0.85);
-      border:1px solid rgba(6,32,44,0.06); box-shadow: 0 6px 20px rgba(6,32,44,0.04);
-      position:sticky; top:12px; z-index:40; margin-bottom:14px;
+      padding:12px; border-radius:12px; background:var(--glass);
+      border:1px solid rgba(7,32,44,0.06); box-shadow: 0 8px 30px rgba(7,30,60,0.04);
+      position:sticky; top:12px; z-index:20;
     }
-    .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
-    .logo-wrap{ width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; border-radius:8px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900 }
-    .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:transparent; -webkit-background-clip:text; }
+    .brand { display:flex; gap:12px; align-items:center; min-width:0; }
+    .logo { width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; font-family:Manrope; }
+    .who { min-width:0; overflow:hidden; }
+    .who .hi { font-size:12px; color:var(--muted); margin:0; }
+    .who .name { font-family:Manrope; font-size:15px; font-weight:800; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-    main{ display:flex; flex-direction:column; gap:12px; }
-    .hero-title{ font-family:Manrope; font-size:22px; margin:4px 0 0; color:#06202b; }
-    .lead{ color:var(--muted); font-size:14px; margin:0; }
+    .hdr-actions { display:flex; gap:8px; align-items:center; }
+    .btn-icon { width:40px; height:40px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(7,32,44,0.04); background:transparent; cursor:pointer; font-weight:700; color:var(--muted); }
+    .btn-ghost { padding:8px 12px; border-radius:10px; background:transparent; border:1px solid rgba(7,32,44,0.04); color:var(--muted); cursor:pointer; font-weight:700; }
 
-    .card{ margin-top:6px; border-radius:12px; padding:14px; background: rgba(255,255,255,0.95); border:1px solid rgba(6,32,44,0.04); box-shadow: 0 14px 40px rgba(4,18,30,0.04); }
-    .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
-    label{ font-size:13px; color:#274048; font-weight:600; }
-    input[type="text"], input[type="email"], input[type="password"], select{ padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; font-size:15px; color:#06202b; }
+    /* main card: balance */
+    .card { margin-top:14px; background:var(--card); border-radius:14px; padding:14px; border:1px solid rgba(7,32,44,0.04); box-shadow: 0 20px 50px rgba(7,30,60,0.04); }
+    .card .label { font-size:12px; color:var(--muted); }
+    .balance-row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:6px; }
+    .balance { font-family:Manrope; font-size:28px; font-weight:800; color:#021026; }
+    .balance-sub { font-size:12px; color:var(--muted); margin-top:4px; }
 
-    .small{ color:var(--muted); font-size:13px; }
-    .actions-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:6px; }
-    .submit{ width:100%; padding:12px; border-radius:10px; border:0; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; cursor:pointer; margin-top:8px; }
-    .secondary{ border:1px solid rgba(6,32,44,0.06); padding:10px; border-radius:10px; background:transparent; color:var(--muted); font-weight:700; width:100%; }
-    footer{ margin-top:12px; color:var(--muted); text-align:center; font-size:13px; }
+    /* actions */
+    .actions { display:flex; gap:10px; margin-top:12px; }
+    .action { flex:1; padding:12px 10px; border-radius:12px; text-align:center; font-weight:800; cursor:pointer; border:0; color:#021026; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); }
+    .action.ghost { background:transparent; border:1px solid rgba(7,32,44,0.06); color:var(--muted); font-weight:700; }
 
-    @media (max-width:380px){ .hero-title{ font-size:20px } }
+    /* history list */
+    .section-title { margin:18px 2px 8px; font-weight:800; font-family:Manrope; font-size:14px; color:#021026; }
+    .history { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+    .tx { display:flex; justify-content:space-between; gap:12px; align-items:center; padding:12px; border-radius:12px; background:rgba(2,8,12,0.02); border:1px solid rgba(7,32,44,0.03); }
+    .tx-left { display:flex; gap:10px; align-items:center; min-width:0; }
+    .tx-ico { width:44px; height:44px; border-radius:10px; display:grid; place-items:center; font-weight:800; color:#021026; background:linear-gradient(135deg, rgba(0,188,212,0.08), rgba(132,80,255,0.08)); }
+    .tx-title { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tx-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+    .tx-right { text-align:right; min-width:90px; }
+    .tx-amt { font-weight:800; font-size:15px; }
+    .tx-time { font-size:12px; color:var(--muted); margin-top:4px; }
+
+    /* empty state */
+    .empty { padding:18px; border-radius:12px; text-align:center; color:var(--muted); border:1px dashed rgba(7,32,44,0.03); background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5)); }
+
+    /* footer */
+    footer{ margin-top:18px; text-align:center; font-size:13px; color:var(--muted); }
+
+    @media (max-width:380px){
+      .balance { font-size:24px; }
+      .tx-right { min-width:84px; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
+  <div class="wrap" role="document">
+    <header role="banner" aria-label="Top bar">
       <div class="brand">
-        <div class="logo-wrap" aria-hidden="true">C</div>
-        <div>
-          <div class="small">Welcome back</div>
-          <div class="title">CashCall</div>
+        <div class="logo" aria-hidden="true">C</div>
+        <div class="who">
+          <p class="hi" id="greet">Hello,</p>
+          <p class="name" id="userName">User</p>
         </div>
       </div>
 
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="secondary" onclick="location.href='signup.html'">Sign up</button>
+      <div class="hdr-actions" role="group" aria-label="Header actions">
+        <button id="refreshBtn" class="btn-icon" title="Refresh" aria-label="Refresh">⟳</button>
+        <button id="logoutBtn" class="btn-ghost" title="Log out" aria-label="Log out">Log out</button>
       </div>
     </header>
 
     <main>
-      <div>
-        <div class="hero-title">Log in to CashCall</div>
-        <p class="lead">Access your wallet and payment requests.</p>
-      </div>
-
-      <section class="card" aria-labelledby="login-form">
-        <form id="loginForm" autocomplete="on" novalidate>
-          <div class="form-row">
-            <label for="identifier">Email or phone</label>
-            <input id="identifier" name="identifier" type="text" placeholder="you@example.com or +234 80 0000 0000" required>
+      <section class="card" aria-labelledby="walletTitle">
+        <div id="walletTitle" class="label">Wallet balance</div>
+        <div class="balance-row">
+          <div>
+            <div id="walletCurrency" class="balance">—</div>
+            <div id="walletSub" class="balance-sub">Available balance</div>
           </div>
-
-          <div class="form-row">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Your password" required>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <a href="request.html" class="action" style="text-decoration:none;display:inline-block;padding:8px 12px;font-size:13px;">Request</a>
+            <a href="pay.html" class="action ghost" style="text-decoration:none;display:inline-block;padding:8px 12px;font-size:13px;">Pay</a>
           </div>
+        </div>
 
-          <div class="actions-row">
-            <label style="display:flex;align-items:center;gap:8px;">
-              <input id="remember" type="checkbox" checked> <span class="small">Remember me</span>
-            </label>
-            <a href="#" style="color:var(--accent-a);font-weight:700;font-size:13px;">Forgot?</a>
-          </div>
-
-          <button type="submit" class="submit">Log in</button>
-
-          <div style="margin-top:10px;text-align:center;">
-            <div class="small">or continue with</div>
-            <div style="display:flex;gap:10px;margin-top:8px;">
-              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Google (demo)')">Google</button>
-              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Apple (demo)')">Apple</button>
-            </div>
-            <div style="margin-top:10px;">
-              <span class="small">Don't have an account?</span>
-              <button type="button" class="secondary" onclick="location.href='signup.html'">Create account</button>
-            </div>
-          </div>
-        </form>
+        <div class="actions" style="margin-top:12px;">
+          <a href="withdrawal.html" class="action" style="flex:1;text-decoration:none;display:inline-block;">Withdraw</a>
+          <button id="quickReceive" class="action ghost" style="flex:1;background:transparent;border:1px solid rgba(7,32,44,0.06);">Receive</button>
+        </div>
       </section>
 
-      <footer>© <span id="year"></span> CashCall</footer>
+      <h2 class="section-title">Recent activity</h2>
+
+      <section aria-live="polite">
+        <div id="history" class="history" aria-label="Transaction history">
+          <!-- transactions rendered here -->
+        </div>
+
+        <div id="emptyState" class="empty" hidden>
+          No transactions yet. When you receive or request payments they'll show up here.
+        </div>
+      </section>
     </main>
+
+    <footer>
+      <div id="accountMeta" style="font-size:13px;color:var(--muted)"></div>
+    </footer>
   </div>
 
   <script>
-    /* -----------------------
-       Session storage strategy
-       -----------------------
-       - If "Remember me" checked:
-           -> store token & user in localStorage (persistent across browser restarts)
-       - If NOT checked:
-           -> store token & user in sessionStorage (cleared when the tab/window is closed)
-       - Protected pages (dashboard.html) should look in both storages.
-       - We also store an expiry timestamp for extra safety (demo).
+    /* Dashboard demo logic
+       - reads session from localStorage first, then sessionStorage
+       - expects keys: cashcall_token, cashcall_user, cashcall_wallet
+       - transaction history stored under 'cashcall_history' (array) in localStorage
+       - Logout clears the stored session and redirects to index.html
     */
 
     const TOKEN_KEY = 'cashcall_token';
     const USER_KEY = 'cashcall_user';
     const WALLET_KEY = 'cashcall_wallet';
-    const EXPIRY_KEY = 'cashcall_token_expiry';
-
-    // Demo: token creator (replace by server-issued token)
-    function makeToken() {
-      return 'tok_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-    }
-
-    // TTL for non-remember sessions (ms) — optional; sessionStorage already drops at close,
-    // but we keep an expiry for additional checks (here 24 hours for demonstration)
-    const NON_REMEMBER_TTL_MS = 24 * 60 * 60 * 1000;
-
-    // Helpers to persist session either to sessionStorage or localStorage
-    function persistSession({ token, user, wallet, remember }) {
-      const targetStorage = remember ? localStorage : sessionStorage;
-      const otherStorage = remember ? sessionStorage : localStorage;
-
-      // Clear the other storage to avoid ambiguity
-      otherStorage.removeItem(TOKEN_KEY);
-      otherStorage.removeItem(USER_KEY);
-      otherStorage.removeItem(WALLET_KEY);
-      otherStorage.removeItem(EXPIRY_KEY);
-
-      targetStorage.setItem(TOKEN_KEY, token);
-      targetStorage.setItem(USER_KEY, JSON.stringify(user));
-      targetStorage.setItem(WALLET_KEY, JSON.stringify(wallet));
-
-      if (!remember) {
-        // set an expiry timestamp for non-remember sessions
-        const expiry = Date.now() + NON_REMEMBER_TTL_MS;
-        targetStorage.setItem(EXPIRY_KEY, String(expiry));
-      } else {
-        // remove expiry for persistent sessions (or set far future if you prefer)
-        targetStorage.removeItem(EXPIRY_KEY);
-      }
-    }
+    const HISTORY_KEY = 'cashcall_history';
 
     function readSession() {
-      // Prefer localStorage (persistent) if present, else sessionStorage
       let token = localStorage.getItem(TOKEN_KEY);
       let user = localStorage.getItem(USER_KEY);
       let wallet = localStorage.getItem(WALLET_KEY);
-      let expiry = localStorage.getItem(EXPIRY_KEY);
 
       if (!token) {
         token = sessionStorage.getItem(TOKEN_KEY);
         user = sessionStorage.getItem(USER_KEY);
         wallet = sessionStorage.getItem(WALLET_KEY);
-        expiry = sessionStorage.getItem(EXPIRY_KEY);
       }
-
       if (!token || !user || !wallet) return null;
-
-      // if expiry set, check it
-      if (expiry && Number(expiry) < Date.now()) {
-        // expired
-        clearAllSession();
-        return null;
-      }
-
       try {
         return {
           token,
@@ -192,83 +163,211 @@
           wallet: JSON.parse(wallet)
         };
       } catch (err) {
-        // corrupted data
-        clearAllSession();
+        // malformed data: clear
+        clearSession();
         return null;
       }
     }
 
-    function clearAllSession() {
-      localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(USER_KEY); localStorage.removeItem(WALLET_KEY); localStorage.removeItem(EXPIRY_KEY);
-      sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(USER_KEY); sessionStorage.removeItem(WALLET_KEY); sessionStorage.removeItem(EXPIRY_KEY);
+    function clearSession() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(WALLET_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(WALLET_KEY);
     }
 
-    // Auto-redirect if already logged in (auto-login)
-    (function autoRedirectIfLoggedIn() {
+    // Format currency nicely using Intl; fallback to plain string if unsupported
+    function formatCurrency(amount, currency) {
+      try {
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+      } catch (err) {
+        return (currency ? currency + ' ' : '') + Number(amount).toFixed(2);
+      }
+    }
+
+    // Render wallet and user info
+    function renderHeader(session) {
+      const userName = document.getElementById('userName');
+      const greet = document.getElementById('greet');
+      const meta = document.getElementById('accountMeta');
+
+      userName.textContent = session.user.name || session.user.email || 'User';
+      greet.textContent = 'Hello,';
+      meta.textContent = (session.user.email || session.user.phone || '') + (session.user.country ? ' • ' + session.user.country.toUpperCase() : '');
+    }
+
+    function renderWallet(session) {
+      const currencyEl = document.getElementById('walletCurrency');
+      const walletSub = document.getElementById('walletSub');
+      const wallet = session.wallet || { balance: 0, currency: 'USD' };
+      currencyEl.textContent = formatCurrency(wallet.balance || 0, wallet.currency || 'USD');
+      walletSub.textContent = 'Available balance • ' + (wallet.currency || 'USD');
+    }
+
+    // transactions: expected shape { id, type: 'credit'|'debit'|'request', title, subtitle, amount, currency, timestamp }
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY) || '[]';
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr)) return [];
+        // most recent first
+        return arr.slice().reverse();
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function saveHistory(arr) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(arr || []));
+    }
+
+    function addDemoTransaction(tx) {
+      // push to history in chronological order then re-render
+      const cur = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      cur.push(tx);
+      saveHistory(cur);
+      renderHistory();
+    }
+
+    function txIcon(type) {
+      if (type === 'credit') return '＋';
+      if (type === 'debit') return '－';
+      if (type === 'request') return '🔗';
+      return '•';
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('history');
+      const emptyState = document.getElementById('emptyState');
+      list.innerHTML = '';
+
+      const txs = loadHistory();
+      if (!txs.length) {
+        emptyState.hidden = false;
+        return;
+      } else {
+        emptyState.hidden = true;
+      }
+
+      txs.forEach(tx => {
+        const el = document.createElement('div');
+        el.className = 'tx';
+        el.innerHTML = `
+          <div class="tx-left">
+            <div class="tx-ico" aria-hidden="true">${txIcon(tx.type)}</div>
+            <div style="min-width:0">
+              <div class="tx-title">${escapeHtml(tx.title)}</div>
+              <div class="tx-sub">${escapeHtml(tx.subtitle || '')}</div>
+            </div>
+          </div>
+          <div class="tx-right">
+            <div class="tx-amt">${formatCurrency(tx.amount, tx.currency)}</div>
+            <div class="tx-time">${timeAgo(new Date(tx.timestamp))}</div>
+          </div>
+        `;
+        list.appendChild(el);
+      });
+    }
+
+    // small helper to render human-friendly time
+    function timeAgo(date) {
+      const diff = Date.now() - date.getTime();
+      const s = Math.floor(diff / 1000);
+      if (s < 60) return s + 's';
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + 'm';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + 'h';
+      const d = Math.floor(h / 24);
+      return d + 'd';
+    }
+
+    // prevent XSS in inserted text
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // init dashboard
+    (function init(){
       const s = readSession();
-      if (s && s.token) {
-        // We have a stored session — auto-login to dashboard
-        // Optional: you may want to validate token with server before redirecting
-        window.location.href = 'dashboard.html';
+      if (!s) {
+        // not logged in — send to index or login
+        window.location.href = 'index.html';
+        return;
       }
+
+      renderHeader(s);
+      renderWallet(s);
+      renderHistory();
+
+      // Demo: wiring buttons
+      document.getElementById('refreshBtn').addEventListener('click', () => {
+        // in a real app you'd re-fetch wallet & history; here we re-read localStorage
+        renderWallet(readSession() || s);
+        renderHistory();
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        clearSession();
+        // redirect to index.html as requested
+        window.location.href = 'index.html';
+      });
+
+      document.getElementById('quickReceive').addEventListener('click', () => {
+        // Demo quick receive: add a small credit to history & update wallet balance
+        const wallet = (readSession() && readSession().wallet) || { balance: 0, currency: 'USD' };
+        const amount = 50; // demo amount
+        const tx = {
+          id: 'tx_' + Math.random().toString(36).slice(2),
+          type: 'credit',
+          title: 'Quick receive',
+          subtitle: 'Demo incoming payment',
+          amount,
+          currency: wallet.currency,
+          timestamp: new Date().toISOString()
+        };
+        addDemoTransaction(tx);
+
+        // update stored wallet balance
+        const session = readSession();
+        if (session) {
+          session.wallet.balance = (Number(session.wallet.balance) || 0) + amount;
+          // persist to whichever storage holds the session
+          if (localStorage.getItem(TOKEN_KEY)) {
+            localStorage.setItem(WALLET_KEY, JSON.stringify(session.wallet));
+            localStorage.setItem(USER_KEY, JSON.stringify(session.user));
+          } else {
+            sessionStorage.setItem(WALLET_KEY, JSON.stringify(session.wallet));
+            sessionStorage.setItem(USER_KEY, JSON.stringify(session.user));
+          }
+          // re-render
+          renderWallet(session);
+          renderHistory();
+        }
+      });
+
+      // example: if no history exists, seed a lightweight demo (optional)
+      if (!loadHistory().length) {
+        // seed a tiny demo transaction so the UI doesn't look empty (comment out if undesired)
+        const seed = {
+          id: 'seed_' + Date.now(),
+          type: 'credit',
+          title: 'Welcome bonus',
+          subtitle: 'Thanks for signing up',
+          amount: 10,
+          currency: (s.wallet && s.wallet.currency) || 'USD',
+          timestamp: new Date().toISOString()
+        };
+        saveHistory([seed]);
+        renderHistory();
+      }
+
+      // hook up anchor links for request/pay/withdrawal to be naturally navigable
+      // (they are normal anchors in markup)
     })();
-
-    // Demo login flow:
-    // - Replace the block below with a real API call:
-    //   fetch('/api/login', {method:'POST', body: JSON.stringify({id, password})})...
-    // - On success use server token + user + wallet payload instead of demo data.
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      const identifier = form.identifier.value.trim();
-      const password = form.password.value;
-      const remember = document.getElementById('remember').checked;
-
-      // Demo client-side "authentication" — replace with real API call
-      // Simple validation (demo)
-      if (!identifier || !password) {
-        alert('Enter your credentials.');
-        return;
-      }
-
-      // Normally: await fetch('/auth/login', {method:'POST', headers:{...}, body: JSON.stringify({identifier,password})})
-      // Server should return: { token, user, wallet }
-      // For demo we fabricate a user + wallet
-      const token = makeToken();
-      const user = {
-        id: 'user_' + Math.random().toString(36).slice(2),
-        name: identifier.split('@')[0] || identifier,
-        email: identifier.includes('@') ? identifier.toLowerCase() : '',
-        phone: identifier.includes('+') ? identifier : '',
-        country: 'ng' // default demo; your server should return actual country
-      };
-      const wallet = {
-        userId: user.id,
-        currency: 'NGN',
-        balance: 0.00
-      };
-
-      // Persist to storage based on remember flag
-      persistSession({ token, user, wallet, remember });
-
-      // Redirect to dashboard
-      window.location.href = 'dashboard.html';
-    });
-
-    // If user clicks log out from other tab, listen for storage changes to update UI (optional)
-    window.addEventListener('storage', (e) => {
-      if ((e.key === TOKEN_KEY || e.key === USER_KEY) && !readSession()) {
-        // signed out elsewhere — optionally update UI; here we simply no-op
-      }
-    });
-
-    // dynamic year in footer
-    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
