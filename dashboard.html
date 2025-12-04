@@ -3,109 +3,272 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>CashCall — Dashboard</title>
-  <meta name="description" content="CashCall dashboard (demo): shows wallet currency & balance." />
+  <title>CashCall — Log in</title>
+  <meta name="description" content="Log in to CashCall to manage payments." />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg-1:#eaf6ff; --bg-2:#f7fbff; --accent-a:#00bcd4; --accent-b:#8450ff; --muted:#4b6272;
+      --bg-1:#f3fbff; --bg-2:#ffffff;
+      --accent-a:#00bcd4; --accent-b:#8450ff; --muted:#4b6272;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0; padding:0; background: linear-gradient(180deg,var(--bg-1),var(--bg-2)); font-family:Inter,system-ui,Arial; -webkit-font-smoothing:antialiased;}
-    .wrap{ max-width:420px; margin:18px auto; padding:12px; }
-    header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px;border-radius:12px;background:rgba(255,255,255,0.85); border:1px solid rgba(6,32,44,0.06) }
-    .brand{display:flex;gap:10px;align-items:center}
-    h1{ font-family:Manrope; margin:8px 0 0; font-size:20px; color:#06202b }
-    .card{ margin-top:12px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.95); border:1px solid rgba(6,32,44,0.04) }
-    .balance { font-size:28px; font-weight:800; font-family:Manrope; margin-top:6px; color:#06202b; }
-    .small{ color:var(--muted); font-size:13px }
-    button{ padding:10px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:700 }
-    .logout{ background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026 }
-    .secondary{ background:transparent; border:1px solid rgba(6,32,44,0.06); color:var(--muted) }
-    footer{ margin-top:12px; color:var(--muted); font-size:13px; text-align:center }
+    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
+    body{
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:#06202b;
+      padding:18px 14px;
+      -webkit-font-smoothing:antialiased;
+    }
+    .wrap{ max-width:420px; margin:0 auto; }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:10px 12px; border-radius:12px; background: rgba(255,255,255,0.85);
+      border:1px solid rgba(6,32,44,0.06); box-shadow: 0 6px 20px rgba(6,32,44,0.04);
+      position:sticky; top:12px; z-index:40; margin-bottom:14px;
+    }
+    .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
+    .logo-wrap{ width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; border-radius:8px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900 }
+    .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:transparent; -webkit-background-clip:text; }
+
+    main{ display:flex; flex-direction:column; gap:12px; }
+    .hero-title{ font-family:Manrope; font-size:22px; margin:4px 0 0; color:#06202b; }
+    .lead{ color:var(--muted); font-size:14px; margin:0; }
+
+    .card{ margin-top:6px; border-radius:12px; padding:14px; background: rgba(255,255,255,0.95); border:1px solid rgba(6,32,44,0.04); box-shadow: 0 14px 40px rgba(4,18,30,0.04); }
+    .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+    label{ font-size:13px; color:#274048; font-weight:600; }
+    input[type="text"], input[type="email"], input[type="password"], select{ padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; font-size:15px; color:#06202b; }
+
+    .small{ color:var(--muted); font-size:13px; }
+    .actions-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:6px; }
+    .submit{ width:100%; padding:12px; border-radius:10px; border:0; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; cursor:pointer; margin-top:8px; }
+    .secondary{ border:1px solid rgba(6,32,44,0.06); padding:10px; border-radius:10px; background:transparent; color:var(--muted); font-weight:700; width:100%; }
+    footer{ margin-top:12px; color:var(--muted); text-align:center; font-size:13px; }
+
+    @media (max-width:380px){ .hero-title{ font-size:20px } }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <div style="width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));color:#021026;font-weight:900">C</div>
+        <div class="logo-wrap" aria-hidden="true">C</div>
         <div>
-          <div style="font-size:13px;color:var(--muted)">Welcome</div>
-          <div id="userName" style="font-weight:800;font-family:Manrope"></div>
+          <div class="small">Welcome back</div>
+          <div class="title">CashCall</div>
         </div>
       </div>
+
       <div style="display:flex;gap:8px;align-items:center">
-        <button id="refreshBtn" class="secondary">Refresh</button>
-        <button id="logoutBtn" class="logout">Log out</button>
+        <button class="secondary" onclick="location.href='signup.html'">Sign up</button>
       </div>
     </header>
 
-    <section class="card" aria-live="polite">
-      <div class="small">Wallet</div>
-      <div id="walletCurrency" class="small" style="margin-top:6px"></div>
-      <div id="walletBalance" class="balance">0.00</div>
-
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button id="receiveBtn" class="secondary" style="flex:1" onclick="alert('Receive flow (demo)')">Receive</button>
-        <button id="sendBtn" class="secondary" style="flex:1" onclick="alert('Send flow (demo)')">Send</button>
+    <main>
+      <div>
+        <div class="hero-title">Log in to CashCall</div>
+        <p class="lead">Access your wallet and payment requests.</p>
       </div>
-    </section>
 
-    <section class="card" style="margin-top:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><div class="small">Account</div><div id="accountEmail" style="font-weight:700"></div></div>
-        <div><div class="small">Country</div><div id="accountCountry" style="font-weight:700"></div></div>
-      </div>
-    </section>
+      <section class="card" aria-labelledby="login-form">
+        <form id="loginForm" autocomplete="on" novalidate>
+          <div class="form-row">
+            <label for="identifier">Email or phone</label>
+            <input id="identifier" name="identifier" type="text" placeholder="you@example.com or +234 80 0000 0000" required>
+          </div>
 
-    <footer>© <span id="year"></span> CashCall</footer>
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Your password" required>
+          </div>
+
+          <div class="actions-row">
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input id="remember" type="checkbox" checked> <span class="small">Remember me</span>
+            </label>
+            <a href="#" style="color:var(--accent-a);font-weight:700;font-size:13px;">Forgot?</a>
+          </div>
+
+          <button type="submit" class="submit">Log in</button>
+
+          <div style="margin-top:10px;text-align:center;">
+            <div class="small">or continue with</div>
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Google (demo)')">Google</button>
+              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Apple (demo)')">Apple</button>
+            </div>
+            <div style="margin-top:10px;">
+              <span class="small">Don't have an account?</span>
+              <button type="button" class="secondary" onclick="location.href='signup.html'">Create account</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <footer>© <span id="year"></span> CashCall</footer>
+    </main>
   </div>
 
   <script>
-    // read session from localStorage
-    function loadSession(){
-      const token = localStorage.getItem('cashcall_token');
-      const user = JSON.parse(localStorage.getItem('cashcall_user') || 'null');
-      const wallet = JSON.parse(localStorage.getItem('cashcall_wallet') || 'null');
+    /* -----------------------
+       Session storage strategy
+       -----------------------
+       - If "Remember me" checked:
+           -> store token & user in localStorage (persistent across browser restarts)
+       - If NOT checked:
+           -> store token & user in sessionStorage (cleared when the tab/window is closed)
+       - Protected pages (dashboard.html) should look in both storages.
+       - We also store an expiry timestamp for extra safety (demo).
+    */
 
-      if (!token || !user || !wallet) {
-        // not authenticated: send to signup/login
-        window.location.href = 'signup.html';
+    const TOKEN_KEY = 'cashcall_token';
+    const USER_KEY = 'cashcall_user';
+    const WALLET_KEY = 'cashcall_wallet';
+    const EXPIRY_KEY = 'cashcall_token_expiry';
+
+    // Demo: token creator (replace by server-issued token)
+    function makeToken() {
+      return 'tok_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    // TTL for non-remember sessions (ms) — optional; sessionStorage already drops at close,
+    // but we keep an expiry for additional checks (here 24 hours for demonstration)
+    const NON_REMEMBER_TTL_MS = 24 * 60 * 60 * 1000;
+
+    // Helpers to persist session either to sessionStorage or localStorage
+    function persistSession({ token, user, wallet, remember }) {
+      const targetStorage = remember ? localStorage : sessionStorage;
+      const otherStorage = remember ? sessionStorage : localStorage;
+
+      // Clear the other storage to avoid ambiguity
+      otherStorage.removeItem(TOKEN_KEY);
+      otherStorage.removeItem(USER_KEY);
+      otherStorage.removeItem(WALLET_KEY);
+      otherStorage.removeItem(EXPIRY_KEY);
+
+      targetStorage.setItem(TOKEN_KEY, token);
+      targetStorage.setItem(USER_KEY, JSON.stringify(user));
+      targetStorage.setItem(WALLET_KEY, JSON.stringify(wallet));
+
+      if (!remember) {
+        // set an expiry timestamp for non-remember sessions
+        const expiry = Date.now() + NON_REMEMBER_TTL_MS;
+        targetStorage.setItem(EXPIRY_KEY, String(expiry));
+      } else {
+        // remove expiry for persistent sessions (or set far future if you prefer)
+        targetStorage.removeItem(EXPIRY_KEY);
+      }
+    }
+
+    function readSession() {
+      // Prefer localStorage (persistent) if present, else sessionStorage
+      let token = localStorage.getItem(TOKEN_KEY);
+      let user = localStorage.getItem(USER_KEY);
+      let wallet = localStorage.getItem(WALLET_KEY);
+      let expiry = localStorage.getItem(EXPIRY_KEY);
+
+      if (!token) {
+        token = sessionStorage.getItem(TOKEN_KEY);
+        user = sessionStorage.getItem(USER_KEY);
+        wallet = sessionStorage.getItem(WALLET_KEY);
+        expiry = sessionStorage.getItem(EXPIRY_KEY);
+      }
+
+      if (!token || !user || !wallet) return null;
+
+      // if expiry set, check it
+      if (expiry && Number(expiry) < Date.now()) {
+        // expired
+        clearAllSession();
         return null;
       }
-      return { token, user, wallet };
+
+      try {
+        return {
+          token,
+          user: JSON.parse(user),
+          wallet: JSON.parse(wallet)
+        };
+      } catch (err) {
+        // corrupted data
+        clearAllSession();
+        return null;
+      }
     }
 
-    function render(){
-      const s = loadSession();
-      if (!s) return;
-      const { user, wallet } = s;
-      document.getElementById('userName').textContent = user.name || user.email || 'User';
-      document.getElementById('accountEmail').textContent = user.email || '';
-      // map country code to label
-      const labels = { ng: 'Nigeria', za: 'South Africa', gh: 'Ghana' };
-      document.getElementById('accountCountry').textContent = labels[user.country] || user.country;
-      document.getElementById('walletCurrency').textContent = 'Currency: ' + wallet.currency;
-      // format balance (simple)
-      document.getElementById('walletBalance').textContent = new Intl.NumberFormat(undefined, { style: 'currency', currency: wallet.currency, minimumFractionDigits: 2 }).format(wallet.balance);
+    function clearAllSession() {
+      localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(USER_KEY); localStorage.removeItem(WALLET_KEY); localStorage.removeItem(EXPIRY_KEY);
+      sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(USER_KEY); sessionStorage.removeItem(WALLET_KEY); sessionStorage.removeItem(EXPIRY_KEY);
     }
 
-    // logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('cashcall_token');
-      localStorage.removeItem('cashcall_user');
-      localStorage.removeItem('cashcall_wallet');
-      window.location.href = 'signup.html';
+    // Auto-redirect if already logged in (auto-login)
+    (function autoRedirectIfLoggedIn() {
+      const s = readSession();
+      if (s && s.token) {
+        // We have a stored session — auto-login to dashboard
+        // Optional: you may want to validate token with server before redirecting
+        window.location.href = 'dashboard.html';
+      }
+    })();
+
+    // Demo login flow:
+    // - Replace the block below with a real API call:
+    //   fetch('/api/login', {method:'POST', body: JSON.stringify({id, password})})...
+    // - On success use server token + user + wallet payload instead of demo data.
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const identifier = form.identifier.value.trim();
+      const password = form.password.value;
+      const remember = document.getElementById('remember').checked;
+
+      // Demo client-side "authentication" — replace with real API call
+      // Simple validation (demo)
+      if (!identifier || !password) {
+        alert('Enter your credentials.');
+        return;
+      }
+
+      // Normally: await fetch('/auth/login', {method:'POST', headers:{...}, body: JSON.stringify({identifier,password})})
+      // Server should return: { token, user, wallet }
+      // For demo we fabricate a user + wallet
+      const token = makeToken();
+      const user = {
+        id: 'user_' + Math.random().toString(36).slice(2),
+        name: identifier.split('@')[0] || identifier,
+        email: identifier.includes('@') ? identifier.toLowerCase() : '',
+        phone: identifier.includes('+') ? identifier : '',
+        country: 'ng' // default demo; your server should return actual country
+      };
+      const wallet = {
+        userId: user.id,
+        currency: 'NGN',
+        balance: 0.00
+      };
+
+      // Persist to storage based on remember flag
+      persistSession({ token, user, wallet, remember });
+
+      // Redirect to dashboard
+      window.location.href = 'dashboard.html';
     });
 
-    // refresh button (re-read localStorage)
-    document.getElementById('refreshBtn').addEventListener('click', render);
+    // If user clicks log out from other tab, listen for storage changes to update UI (optional)
+    window.addEventListener('storage', (e) => {
+      if ((e.key === TOKEN_KEY || e.key === USER_KEY) && !readSession()) {
+        // signed out elsewhere — optionally update UI; here we simply no-op
+      }
+    });
 
+    // dynamic year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // initial render
-    render();
   </script>
 </body>
 </html>
