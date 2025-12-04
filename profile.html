@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Profile — CashCall</title>
+  <meta name="description" content="Update profile, upload profile photo and identity document (ID / Passport). Stores locally for demo." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --maxw:420px;
+      --bg-1:#eef6fb;
+      --bg-2:#ffffff;
+      --card:#ffffff;
+      --muted:#50636f;
+      --accent-a:#00bcd4;
+      --accent-b:#8450ff;
+      --radius:12px;
+      --shadow: 0 18px 40px rgba(7,30,60,0.06);
+      --danger: #b42318;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#06202b}
+    body{ padding:18px; -webkit-font-smoothing:antialiased }
+    .wrap{ max-width:var(--maxw); margin:0 auto }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border-radius:12px;
+      background:rgba(255,255,255,0.95); border:1px solid rgba(7,32,44,0.06); box-shadow:var(--shadow); position:sticky; top:12px; z-index:40;
+    }
+    .brand{ display:flex; gap:10px; align-items:center }
+    .logo { width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; font-family:Manrope }
+    .title{ font-family:Manrope; font-weight:800; font-size:16px; margin:0 }
+
+    main{ margin-top:12px; display:grid; gap:12px }
+
+    .card{ background:var(--card); border-radius:12px; padding:14px; border:1px solid rgba(7,32,44,0.04); box-shadow:0 10px 30px rgba(7,30,60,0.04) }
+    h2{ margin:0 0 8px 0; font-family:Manrope; font-size:18px }
+    label{ display:block; font-weight:700; margin-bottom:6px; color:#274048; font-size:13px }
+    .hint{ font-size:13px; color:var(--muted); margin-top:6px }
+
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+      width:100%; padding:12px; border-radius:10px; border:1px solid rgba(7,32,44,0.06); background:transparent; font-size:15px; color:#06202b;
+    }
+
+    .row { display:flex; gap:8px; }
+    .col { flex:1 }
+
+    .uploader { display:flex; gap:12px; align-items:center; }
+    .preview {
+      width:78px; height:78px; border-radius:10px; background:linear-gradient(180deg,#fff,#f7fbff); border:1px solid rgba(7,32,44,0.04);
+      display:grid; place-items:center; overflow:hidden; object-fit:cover;
+    }
+    .upload-controls { flex:1 }
+    .file-input { display:block; margin-bottom:6px; }
+
+    .actions { display:flex; gap:8px; margin-top:12px; }
+    .btn { flex:1; padding:12px; border-radius:10px; border:0; font-weight:800; cursor:pointer; }
+    .btn-primary { background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026 }
+    .btn-ghost { background:transparent; border:1px solid rgba(7,32,44,0.06); color:var(--muted); font-weight:700 }
+
+    .small { font-size:13px; color:var(--muted) }
+    .status { margin-top:10px; padding:10px; border-radius:10px; display:none; font-weight:700 }
+    .status.ok { display:block; color:#0a7a3c; background:rgba(10,122,60,0.06); border:1px solid rgba(10,122,60,0.06) }
+    .status.warn { display:block; color:var(--muted); background:rgba(0,0,0,0.02); border:1px solid rgba(0,0,0,0.02) }
+    .status.err { display:block; color:var(--danger); background:rgba(180,35,24,0.05); border:1px solid rgba(180,35,24,0.06) }
+
+    .meta-row { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+
+    .doc-meta { font-size:12px; color:var(--muted); margin-top:8px }
+
+    @media (max-width:420px){
+      .preview { width:72px; height:72px }
+      .actions { flex-direction:column }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="document">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">C</div>
+        <div>
+          <p class="title">CashCall</p>
+          <p class="small" style="margin:0">Profile & identity</p>
+        </div>
+      </div>
+
+      <nav>
+        <a class="small" href="dashboard.html">Dashboard</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Basic profile -->
+      <section class="card" aria-labelledby="profileHeading">
+        <h2 id="profileHeading">Your profile</h2>
+        <form id="profileForm" novalidate>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div class="preview" id="avatarPreview" aria-hidden="true">
+              <span id="avatarInitial" style="font-weight:800;color:#021026;font-family:Manrope;font-size:22px">C</span>
+              <img id="avatarImg" src="" alt="Profile photo preview" style="display:none;width:100%;height:100%;object-fit:cover" />
+            </div>
+
+            <div style="flex:1">
+              <label for="fullName">Full name</label>
+              <input id="fullName" name="name" type="text" placeholder="Your full name" autocomplete="name" required>
+
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <input id="email" name="email" type="email" placeholder="you@example.com" style="flex:1" autocomplete="email">
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <input id="phone" name="phone" type="tel" placeholder="+234 80 0000 0000" style="flex:1" autocomplete="tel">
+              </div>
+
+              <div class="meta-row">
+                <label for="country" style="margin:0;font-weight:700;font-size:13px;color:#274048">Country</label>
+                <select id="country" name="country" style="border-radius:10px;padding:8px 10px;border:1px solid rgba(7,32,44,0.06);">
+                  <option value="ng">Nigeria</option>
+                  <option value="za">South Africa</option>
+                  <option value="gh">Ghana</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="avatarFile">Profile picture</label>
+            <div class="uploader">
+              <div class="upload-controls" style="flex:1">
+                <input id="avatarFile" class="file-input" type="file" accept="image/*" aria-describedby="avatarHint">
+                <div id="avatarHint" class="small">PNG or JPG. Max 5MB. We'll store this image locally for demo.</div>
+              </div>
+              <div style="width:88px;text-align:right">
+                <button type="button" id="removeAvatar" class="btn-ghost" style="padding:8px 10px">Remove</button>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <button id="saveProfile" type="button" class="btn btn-primary">Save profile</button>
+            </div>
+
+            <div id="profileStatus" class="status warn" role="status" aria-live="polite" style="display:none"></div>
+          </div>
+        </form>
+      </section>
+
+      <!-- ID / Passport upload -->
+      <section class="card" aria-labelledby="idHeading">
+        <h2 id="idHeading">Identity document</h2>
+
+        <div class="form-row">
+          <label for="idType">Document type</label>
+          <select id="idType">
+            <option value="id">National ID</option>
+            <option value="passport">Passport</option>
+            <option value="other">Other (NIN / Voter ID)</option>
+          </select>
+          <div class="hint">Choose the document type you want to upload for country verification.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="idNumber">Document number</label>
+          <input id="idNumber" type="text" placeholder="ID or passport number" autocomplete="off">
+          <div class="hint">Enter the document number exactly as it appears on the document.</div>
+        </div>
+
+        <div style="margin-top:8px; display:flex; gap:12px; align-items:flex-start;">
+          <div class="preview" aria-hidden="true" id="docPreview">
+            <img id="docImg" src="" alt="Document preview" style="display:none;width:100%;height:100%;object-fit:cover" />
+            <div id="docPlaceholder" style="font-size:12px;color:var(--muted);padding:6px;text-align:center">No document</div>
+          </div>
+
+          <div style="flex:1">
+            <label for="docFile">Upload ID / Passport</label>
+            <input id="docFile" class="file-input" type="file" accept="image/*,application/pdf" aria-describedby="docHint">
+            <div id="docHint" class="small">JPG, PNG or PDF. Max 8MB. For PDFs we show filename only in demo.</div>
+
+            <div style="margin-top:8px; display:flex; gap:8px;">
+              <button id="verifyDoc" class="btn btn-primary" type="button">Verify document</button>
+              <button id="removeDoc" class="btn btn-ghost" type="button">Remove</button>
+            </div>
+
+            <div id="docMeta" class="doc-meta" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div id="docStatus" class="status" style="display:none" role="status" aria-live="polite"></div>
+
+        <p class="small" style="margin-top:10px"><strong>Note:</strong> This demo stores files in your browser's <code>localStorage</code>. For production, upload documents to your server and run KYC with a trusted provider. Client-side "verification" here is only a local convenience check.</p>
+      </section>
+
+      <section class="card">
+        <h2 style="margin:0 0 8px 0">Saved profile</h2>
+        <div id="savedBlock" class="small" style="min-height:44px">No saved profile yet.</div>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button id="exportBtn" class="btn-ghost" type="button">Export (copy JSON)</button>
+          <button id="clearBtn" class="btn-ghost" type="button">Clear profile</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * profile.html
+     *
+     * - Saves profile data + profile image + document to localStorage under key `cashcall_profile`.
+     * - Stores images/documents as Base64 data URLs (small demo) or stores PDF filename and binary as Base64 if small.
+     * - Basic validation: allowed file types, size limits, and a simple client-side "verify" routine that does lightweight checks.
+     *
+     * IMPORTANT: This is a demo/local-storage approach. For production:
+     *  - Upload files to a secure server.
+     *  - Perform identity verification server-side using a KYC provider (Onfido, Sumsub, Trulioo, etc.).
+     *  - Do NOT rely on client-side verification for security or compliance.
+     */
+
+    const STORAGE_KEY = 'cashcall_profile';
+    const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
+    const MAX_DOC_BYTES = 8 * 1024 * 1024; // 8MB
+
+    // DOM
+    const avatarFileEl = document.getElementById('avatarFile');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarImg = document.getElementById('avatarImg');
+    const avatarInitial = document.getElementById('avatarInitial');
+    const removeAvatarBtn = document.getElementById('removeAvatar');
+
+    const fullNameEl = document.getElementById('fullName');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const countryEl = document.getElementById('country');
+    const saveProfileBtn = document.getElementById('saveProfile');
+    const profileStatus = document.getElementById('profileStatus');
+
+    const idTypeEl = document.getElementById('idType');
+    const idNumberEl = document.getElementById('idNumber');
+    const docFileEl = document.getElementById('docFile');
+    const docPreview = document.getElementById('docPreview');
+    const docImg = document.getElementById('docImg');
+    const docPlaceholder = document.getElementById('docPlaceholder');
+    const removeDocBtn = document.getElementById('removeDoc');
+    const verifyDocBtn = document.getElementById('verifyDoc');
+    const docMeta = document.getElementById('docMeta');
+    const docStatus = document.getElementById('docStatus');
+
+    const savedBlock = document.getElementById('savedBlock');
+    const exportBtn = document.getElementById('exportBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Utilities
+    function readProfile() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch (e) { return null; }
+    }
+
+    function writeProfile(obj) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+    }
+
+    function clearProfile() {
+      localStorage.removeItem(STORAGE_KEY);
+      renderSaved();
+      showProfileStatus('Profile cleared', 'warn');
+    }
+
+    function showProfileStatus(msg, type='warn') {
+      profileStatus.style.display = 'block';
+      profileStatus.className = 'status ' + (type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'warn');
+      profileStatus.textContent = msg;
+      setTimeout(()=> {
+        // do not auto-hide errors immediately
+        if (type !== 'err') profileStatus.style.display = 'none';
+      }, 2200);
+    }
+
+    function showDocStatus(msg, type='warn') {
+      docStatus.style.display = 'block';
+      docStatus.className = 'status ' + (type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'warn');
+      docStatus.textContent = msg;
+      if (type !== 'err') setTimeout(()=> docStatus.style.display = 'none', 2200);
+    }
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('File read error'));
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function isImageType(type) {
+      return type && type.startsWith('image/');
+    }
+    function isPdfType(type) {
+      return type === 'application/pdf';
+    }
+
+    // Avatar handling
+    avatarFileEl.addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      if (!isImageType(f.type)) {
+        alert('Please upload an image (JPG or PNG).');
+        avatarFileEl.value = '';
+        return;
+      }
+      if (f.size > MAX_AVATAR_BYTES) {
+        alert('Profile photo too large (max 5MB).');
+        avatarFileEl.value = '';
+        return;
+      }
+      try {
+        const data = await fileToDataURL(f);
+        // show preview
+        avatarImg.src = data;
+        avatarImg.style.display = 'block';
+        avatarInitial.style.display = 'none';
+        // store temporary in memory (not saved until Save profile)
+        avatarImg.dataset.pending = data;
+      } catch (err) {
+        console.error(err);
+        alert('Unable to read image');
+      }
+    });
+
+    removeAvatarBtn.addEventListener('click', () => {
+      avatarImg.src = '';
+      avatarImg.style.display = 'none';
+      avatarImg.dataset.pending = '';
+      avatarInitial.style.display = 'block';
+      avatarFileEl.value = '';
+    });
+
+    // Document handling
+    docFileEl.addEventListener('change', async (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      if (!(isImageType(f.type) || isPdfType(f.type))) {
+        alert('Unsupported file. Use JPG, PNG or PDF.');
+        docFileEl.value = '';
+        return;
+      }
+      if (f.size > MAX_DOC_BYTES) {
+        alert('Document too large (max 8MB).');
+        docFileEl.value = '';
+        return;
+      }
+      try {
+        const data = await fileToDataURL(f);
+        if (isImageType(f.type)) {
+          docImg.src = data;
+          docImg.style.display = 'block';
+          docPlaceholder.style.display = 'none';
+        } else {
+          // PDF: show placeholder and filename
+          docImg.style.display = 'none';
+          docPlaceholder.style.display = 'block';
+          docPlaceholder.textContent = f.name || 'Uploaded PDF';
+        }
+        docFileEl.dataset.pending = data; // save pending
+        docMeta.textContent = `File: ${f.name} • ${Math.round(f.size/1024)} KB`;
+        showDocStatus('Document ready to verify', 'warn');
+      } catch (err) {
+        console.error(err);
+        alert('Unable to read document');
+      }
+    });
+
+    removeDocBtn.addEventListener('click', () => {
+      docImg.src = ''; docImg.style.display = 'none';
+      docPlaceholder.textContent = 'No document'; docPlaceholder.style.display = 'block';
+      docFileEl.value = '';
+      docFileEl.dataset.pending = '';
+      docMeta.textContent = '';
+      docStatus.style.display = 'none';
+      // update stored profile (if exists)
+      const p = readProfile();
+      if (p) {
+        delete p.idDocument;
+        delete p.idNumber;
+        writeProfile(p);
+        renderSaved();
+      }
+    });
+
+    // Mock "verify" routine (client-side)
+    verifyDocBtn.addEventListener('click', async () => {
+      const pendingData = docFileEl.dataset.pending;
+      const idNum = idNumberEl.value.trim();
+      const idType = idTypeEl.value;
+      const country = countryEl.value;
+
+      if (!pendingData) {
+        showDocStatus('No document uploaded', 'err');
+        return;
+      }
+      if (!idNum) {
+        showDocStatus('Enter the document number', 'err');
+        idNumberEl.focus();
+        return;
+      }
+
+      // Simple heuristics per country/type — purely client-side demo.
+      const ok = clientSideIdSanityCheck(country, idType, idNum);
+      if (!ok) {
+        showDocStatus('Document number failed basic checks (client-side). Upload clearer document or check number.', 'err');
+        return;
+      }
+
+      // mark as verified locally — in real app call server KYC API
+      const p = readProfile() || {};
+      p.idNumber = idNum;
+      p.idType = idType;
+      p.idDocument = pendingData; // base64 data url
+      p.idVerified = true;
+      p.idVerifiedAt = new Date().toISOString();
+      writeProfile(p);
+      showDocStatus('Document verified (demo). For production, verify on server with KYC provider.', 'ok');
+      renderSaved();
+    });
+
+    function clientSideIdSanityCheck(countryCode, idType, idNumber) {
+      // VERY basic checks for demo purposes only
+      const s = String(idNumber).replace(/\s+/g,'');
+      if (countryCode === 'ng') {
+        // Nigerian NIN is usually 11 digits (or 11-12 in some contexts). National ID numbers vary; do a loose check.
+        if (/\d{11}/.test(s)) return true;
+        if (idType === 'passport' && s.length >= 6 && s.length <= 9) return true;
+        return false;
+      }
+      if (countryCode === 'za') {
+        // South African ID is 13 digits
+        if (/^\d{13}$/.test(s)) return true;
+        if (idType === 'passport' && s.length >= 6 && s.length <= 9) return true;
+        return false;
+      }
+      if (countryCode === 'gh') {
+        // Ghana passport or ID varies — accept 6-12 chars for demo
+        if (s.length >= 6 && s.length <= 12) return true;
+        return false;
+      }
+      // default: require at least 5 chars
+      return s.length >= 5;
+    }
+
+    // Save profile (including pending avatar)
+    saveProfileBtn.addEventListener('click', async () => {
+      const name = fullNameEl.value.trim();
+      const email = emailEl.value.trim();
+      const phone = phoneEl.value.trim();
+      const country = countryEl.value;
+
+      if (!name) { showProfileStatus('Please enter your name', 'err'); fullNameEl.focus(); return; }
+
+      // build profile object
+      let p = readProfile() || {};
+      p.name = name;
+      p.email = email;
+      p.phone = phone;
+      p.country = country;
+
+      // avatar pending in avatarImg.dataset.pending
+      if (avatarImg.dataset.pending) {
+        p.avatar = avatarImg.dataset.pending;
+      } else if (p.avatar && !avatarImg.dataset.pending && avatarImg.src) {
+        // keep existing stored avatar if present
+      }
+
+      // id fields: if user uploaded but didn't verify, store doc for later
+      if (docFileEl.dataset.pending) {
+        p.idDocument = docFileEl.dataset.pending;
+        p.idNumber = idNumberEl.value.trim() || p.idNumber || '';
+        p.idType = idTypeEl.value || p.idType || '';
+        // do not mark verified unless verifyDocBtn was executed
+        p.idVerified = p.idVerified || false;
+      }
+
+      p.updatedAt = new Date().toISOString();
+      writeProfile(p);
+      renderSaved();
+      showProfileStatus('Profile saved locally (demo). For secure storage, send to your server.', 'ok');
+      // clean pending markers
+      delete avatarImg.dataset.pending;
+      delete docFileEl.dataset.pending;
+    });
+
+    // Export profile (copy JSON)
+    exportBtn.addEventListener('click', () => {
+      const p = readProfile();
+      if (!p) { alert('No profile saved'); return; }
+      const json = JSON.stringify(p, null, 2);
+      navigator.clipboard?.writeText(json).then(() => alert('Profile JSON copied to clipboard'), () => {
+        prompt('Copy profile JSON', json);
+      });
+    });
+
+    // Clear profile
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('Clear saved profile from this browser?')) return;
+      clearProfile();
+      // visually clear fields
+      fullNameEl.value=''; emailEl.value=''; phoneEl.value=''; countryEl.value='ng';
+      avatarImg.src=''; avatarImg.style.display='none'; avatarInitial.style.display='block';
+      docImg.src=''; docImg.style.display='none'; docPlaceholder.textContent='No document'; docPlaceholder.style.display='block';
+      idNumberEl.value='';
+      docMeta.textContent='';
+      profileStatus.style.display='none';
+      docStatus.style.display='none';
+    });
+
+    // Render saved profile block
+    function renderSaved() {
+      const p = readProfile();
+      if (!p) {
+        savedBlock.textContent = 'No saved profile yet.';
+        return;
+      }
+      // show summary
+      const lines = [];
+      lines.push(p.name || '');
+      if (p.email) lines.push(p.email);
+      if (p.phone) lines.push(p.phone);
+      if (p.country) lines.push('Country: ' + p.country.toUpperCase());
+      if (p.idNumber) lines.push((p.idType || 'ID') + ': ' + p.idNumber + (p.idVerified ? ' (verified)' : ' (unverified)'));
+      savedBlock.innerHTML = lines.map(l => `<div>${escapeHtml(l)}</div>`).join('');
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Load stored profile onto form on startup
+    (function init() {
+      const p = readProfile();
+      if (!p) {
+        renderSaved();
+        return;
+      }
+      fullNameEl.value = p.name || '';
+      emailEl.value = p.email || '';
+      phoneEl.value = p.phone || '';
+      countryEl.value = p.country || 'ng';
+      if (p.avatar) {
+        avatarImg.src = p.avatar;
+        avatarImg.style.display = 'block';
+        avatarInitial.style.display = 'none';
+      } else {
+        avatarImg.src=''; avatarImg.style.display='none'; avatarInitial.style.display='block';
+      }
+
+      if (p.idDocument) {
+        // document may be data URL (image/pdf). show image if image, otherwise show filename placeholder
+        if (p.idDocument.startsWith('data:image/')) {
+          docImg.src = p.idDocument; docImg.style.display='block'; docPlaceholder.style.display='none';
+        } else {
+          docImg.style.display='none'; docPlaceholder.style.display='block'; docPlaceholder.textContent = 'Saved document';
+        }
+        idNumberEl.value = p.idNumber || '';
+        idTypeEl.value = p.idType || 'id';
+        docMeta.textContent = `Saved: ${p.idVerified ? 'verified' : 'unverified'}`;
+      } else {
+        docImg.style.display='none'; docPlaceholder.style.display='block'; docPlaceholder.textContent='No document';
+      }
+
+      renderSaved();
+    })();
+  </script>
+</body>
+</html>
