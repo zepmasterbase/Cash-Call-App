@@ -2,157 +2,336 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CashCall — Request Money</title>
-  <meta name="description" content="Create payment requests in CashCall (demo)" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CashCall — Request Payment</title>
+  <meta name="description" content="Create a payment request to a payee via phone or email." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f7fafc;color:#07112a}
-    .wrap{max-width:980px;margin:0 auto;padding:18px}
-    header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
-    .logo{width:44px;height:44;border-radius:10px;background:linear-gradient(180deg,#2563eb,#1e40af);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(6,30,63,0.04);box-shadow:0 8px 30px rgba(8,30,63,0.04)}
-    h1{margin:0 0 6px}
-    .muted{color:#64748b}
-    form{display:grid;gap:12px;margin-top:12px}
-    input,textarea,select,button{padding:12px;border-radius:10px;border:1px solid #e6eefc;font-size:15px}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
-    .primary{background:#2563eb;color:#fff;border:0;font-weight:800}
-    .ghost{background:transparent;border:1px solid #e6eefc}
-    .muted-2{color:#94a3b8;font-size:13px}
-    .small{font-size:13px;color:#64748b}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    :root{
+      --bg:#f6fbff; --card:#fff; --muted:#5f7582;
+      --accent-a:#00bcd4; --accent-b:#8450ff;
+      --radius:12px; --maxw:420px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:18px;background:linear-gradient(180deg,var(--bg),#fff);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#06202b}
+    .wrap{max-width:var(--maxw);margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;background:rgba(255,255,255,0.9);border:1px solid rgba(6,32,44,0.04)}
+    h1{margin:0;font-family:Manrope;font-size:16px}
+    .card{margin-top:14px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(6,32,44,0.04);box-shadow:0 14px 30px rgba(4,18,30,0.04)}
+    .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    label{font-weight:700;font-size:13px;color:#274048}
+    input, select, textarea{padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);font-size:15px}
+    textarea{min-height:74px;resize:vertical}
+    .actions{display:flex;gap:8px}
+    .btn{flex:1;padding:12px;border-radius:10px;border:0;font-weight:800;color:#021026;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent-a),var(--accent-b))}
+    .btn-ghost{background:transparent;border:1px solid rgba(6,32,44,0.06);color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px}
+    .requests-list { margin-top:14px; display:flex; flex-direction:column; gap:10px }
+    .req { padding:10px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid rgba(6,32,44,0.04); display:flex; justify-content:space-between; align-items:flex-start; gap:12px }
+    .req .left { min-width:0 }
+    .req .title { font-weight:800; font-size:14px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden }
+    .req .meta { font-size:12px; color:var(--muted) }
+    .small-link { font-size:13px; color:var(--accent-a); text-decoration:none; cursor:pointer; }
+    .copy-btn { font-size:13px; padding:6px 8px; border-radius:8px; border:1px solid rgba(6,32,44,0.06); background:transparent; cursor:pointer; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div style="display:flex;gap:12px;align-items:center">
-        <a href="dashboard.html" aria-label="Back to dashboard"><div class="logo">CC</div></a>
-        <div>
-          <h1>Request Money</h1>
-          <div class="muted">Create a payment request — send to a phone number or generate a shareable link (demo).</div>
-        </div>
+      <h1>Request Payment</h1>
+      <div style="display:flex;gap:8px">
+        <a href="dashboard.html" class="small-link">Dashboard</a>
       </div>
-      <nav style="display:flex;gap:8px">
-        <a href="dashboard.html" class="ghost" style="padding:10px 12px;border-radius:10px">Dashboard</a>
-        <a href="pay.html" class="ghost" style="padding:10px 12px;border-radius:10px">Pay</a>
-      </nav>
     </header>
 
-    <main class="grid">
-      <section class="card">
-        <h2 style="margin:0 0 8px">New Request</h2>
-        <form id="reqForm">
-          <label>Recipient phone (include country code)</label>
-          <input id="phone" type="tel" placeholder="+27 82 123 4567" required />
+    <section class="card" aria-labelledby="create-request">
+      <h2 id="create-request" style="margin:0 0 10px 0;font-family:Manrope">Create a request</h2>
 
-          <label>Amount (ZAR)</label>
-          <input id="amount" type="number" min="1" step="0.01" placeholder="e.g. 120.00" required />
-
-          <label>Reference / Note</label>
-          <input id="note" type="text" placeholder="e.g., Dinner split, Invoice #123" />
-
-          <label>
-            <input id="notifySms" type="checkbox" checked /> Send SMS notification to recipient (demo: simulated)
-          </label>
-
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="primary" type="submit">Create Request & Generate Link</button>
-            <button type="button" id="resetBtn" class="ghost">Reset</button>
-          </div>
-        </form>
-
-        <div id="linkBox" style="margin-top:14px;display:none">
-          <div class="muted">Share this link with the payer:</div>
-          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-            <input id="payLink" readonly style="flex:1;padding:10px;border-radius:10px;border:1px solid #e6eefc;background:#fbfdff" />
-            <button id="copyBtn" class="ghost">Copy</button>
-          </div>
-          <div class="small" style="margin-top:8px;color:#334155">Tip: the link is simulated for demo. In production, the link would be a secure PSP/Checkout URL or an app deep link.</div>
-        </div>
-      </section>
-
-      <aside>
-        <div class="card">
-          <h3 style="margin:0 0 8px">Recent Requests</h3>
-          <div id="recent" class="small muted">No requests yet.</div>
+      <form id="requestForm" autocomplete="on">
+        <div class="form-row">
+          <label for="payee">Payee (phone or email)</label>
+          <input id="payee" name="payee" type="text" inputmode="tel" placeholder="+2348012345678 or name@example.com" required>
+          <div class="muted">Enter a phone number (with country code) or an email address.</div>
         </div>
 
-        <div class="card" style="margin-top:12px">
-          <h3 style="margin:0 0 8px">Group Split (Optional)</h3>
-          <div class="small muted">Split an amount among several recipients and generate per-person links in the future. Demo supports simple equal split preview.</div>
-          <label style="margin-top:10px">Group size</label>
-          <input id="groupSize" type="number" min="2" max="20" value="2" />
-          <button id="previewSplit" class="primary" style="margin-top:10px">Preview Equal Split</button>
-          <div id="splitPreview" style="margin-top:10px" class="small muted">—</div>
+        <div class="form-row">
+          <label for="amount">Amount</label>
+          <input id="amount" name="amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="1000.00" required>
         </div>
-      </aside>
-    </main>
 
-    <footer style="margin-top:18px;text-align:center;color:#94a3b8">© <span id="year"></span> CashCall — Demo</footer>
+        <div class="form-row">
+          <label for="currency">Currency</label>
+          <select id="currency" name="currency" required>
+            <option value="NGN">NGN — Naira</option>
+            <option value="ZAR">ZAR — Rand</option>
+            <option value="GHS">GHS — Cedi</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="description">Description (optional)</label>
+          <textarea id="description" name="description" placeholder="What is this request for?"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label>Payment method for payee</label>
+          <div class="muted">Payee will be allowed to pay by <strong>card only</strong> on the pay page.</div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button type="submit" class="btn btn-primary">Create & Send</button>
+          <button type="button" id="saveBtn" class="btn btn-ghost">Save Draft</button>
+        </div>
+      </form>
+    </section>
+
+    <section style="margin-top:14px">
+      <h3 style="margin:0 0 8px 0;font-family:Manrope">Requests</h3>
+      <div id="requests" class="requests-list" aria-live="polite"></div>
+      <div id="noRequests" class="muted" style="display:none">No requests yet.</div>
+    </section>
   </div>
 
-  <div id="toast" style="position:fixed;right:18px;bottom:18px;background:#07112a;color:#fff;padding:12px 14px;border-radius:10px;display:none"></div>
-
   <script>
-    const STORAGE_KEY = 'cashcall_requests_v2';
-    const SESSION_KEY = 'cashcall_session_v2';
-    const $ = s => document.querySelector(s);
-    const fmt = v => Number(v||0).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2});
-    function showToast(msg,t=2400){const el=$('#toast');el.textContent=msg;el.style.display='block';clearTimeout(el._to);el._to=setTimeout(()=>el.style.display='none',t)}
+    /* request.html
+       - creates a request object and stores it in localStorage (cashcall_requests)
+       - builds a pay link to pay.html?request_id=UUID
+       - attempts to send via navigator.share or sms:/mailto:, and shows copy link fallback
+       - pay.html (separate) will read request by id and run Paystack card-only flow
+    */
 
-    function loadRequests(){return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}
-    function saveRequests(a){localStorage.setItem(STORAGE_KEY, JSON.stringify(a))}
-    function newId(){return 'r'+Math.random().toString(36).slice(2,9)}
+    // Storage key for requests
+    const REQUESTS_KEY = 'cashcall_requests';
 
-    document.addEventListener('DOMContentLoaded', ()=>{
-      $('#year').textContent = new Date().getFullYear();
-      if(!localStorage.getItem(SESSION_KEY)){ localStorage.setItem(SESSION_KEY, JSON.stringify({fullname:'Demo User',phone:'+27 82 000 0000',balance:420.00})); }
-      renderRecent();
+    // Utilities
+    function uid(prefix = 'r') {
+      return prefix + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+    }
+    function readRequests() {
+      try { return JSON.parse(localStorage.getItem(REQUESTS_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function saveRequests(list) { localStorage.setItem(REQUESTS_KEY, JSON.stringify(list)); }
 
-      $('#reqForm').addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const phone = $('#phone').value.trim();
-        const amount = Number($('#amount').value);
-        const note = $('#note').value.trim();
-        const notify = $('#notifySms').checked;
-        if(!/^\+?\d{7,15}$/.test(phone)) return showToast('Enter a valid phone including country code.');
-        if(!amount || amount <= 0) return showToast('Enter a valid amount');
+    // DOM
+    const form = document.getElementById('requestForm');
+    const requestsEl = document.getElementById('requests');
+    const noRequests = document.getElementById('noRequests');
+    const saveBtn = document.getElementById('saveBtn');
 
-        const req = { id:newId(), toPhone:phone, toName:'', amount:Number(amount.toFixed(2)), currency:'ZAR', note, status:'pending', createdAt: Date.now() };
-        const list = loadRequests(); list.unshift(req); saveRequests(list);
-        // generate a simulated link - include id so pay page can read it
-        const link = `${location.origin}${location.pathname.replace(/request\\.html.*$/,'') || '/'}pay.html?req=${req.id}`;
-        $('#payLink').value = link;
-        $('#linkBox').style.display = 'block';
-        if(notify) showToast('Request created and SMS simulated (demo).');
-        renderRecent();
+    // Build pay link for a request id
+    function makePayLink(requestId) {
+      // Use absolute URL so share/sms/email recipients get a full link
+      return `${location.origin}${location.pathname.replace(/\/[^/]*$/, '/') }pay.html?request_id=${encodeURIComponent(requestId)}`;
+      // If pay.html is at root, you could also use: `${location.origin}/pay.html?request_id=...`
+    }
+
+    // Render list
+    function renderRequests() {
+      const items = readRequests();
+      requestsEl.innerHTML = '';
+      if (!items.length) {
+        noRequests.style.display = 'block';
+        return;
+      } else noRequests.style.display = 'none';
+
+      items.slice().reverse().forEach(req => {
+        const el = document.createElement('div');
+        el.className = 'req';
+        el.innerHTML = `
+          <div class="left">
+            <div class="title">${escapeHtml(req.description || 'Payment request')}</div>
+            <div class="meta">${escapeHtml(req.payee)} • ${req.currency} ${Number(req.amount).toFixed(2)} • ${new Date(req.createdAt).toLocaleString()}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <button class="copy-btn" data-id="${req.id}">Copy link</button>
+            <a class="small-link" href="${makePayLink(req.id)}" target="_blank" rel="noopener">Open pay page</a>
+          </div>
+        `;
+        requestsEl.appendChild(el);
       });
 
-      $('#resetBtn').addEventListener('click', ()=> { $('#phone').value=''; $('#amount').value=''; $('#note').value=''; $('#linkBox').style.display='none'; });
-
-      $('#copyBtn').addEventListener('click', ()=>{
-        $('#payLink').select();
-        document.execCommand('copy');
-        showToast('Link copied to clipboard');
+      // attach copy handlers
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          const id = ev.currentTarget.dataset.id;
+          const link = makePayLink(id);
+          navigator.clipboard?.writeText(link).then(() => {
+            alert('Link copied to clipboard');
+          }).catch(() => {
+            prompt('Copy this link', link);
+          });
+        });
       });
+    }
 
-      $('#previewSplit').addEventListener('click', ()=>{
-        const amt = Number($('#amount').value || 0);
-        const n = Number($('#groupSize').value || 2);
-        if(!amt || amt <= 0) return showToast('Enter amount to preview split');
-        if(n < 2) return showToast('Group size must be at least 2');
-        const each = (amt / n).toFixed(2);
-        $('#splitPreview').textContent = `Each person pays R ${Number(each).toLocaleString('en-ZA',{minimumFractionDigits:2})}`;
-      });
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Validate payee: simple check for email or international phone (basic)
+    function isEmail(s) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+    }
+    function isPhone(s) {
+      // very permissive international phone check: starts with + and digits, or digits with length
+      return /^\+?[0-9 \-]{7,20}$/.test(s);
+    }
+
+    // Create request and optionally send link
+    async function createAndSend(data, { sendImmediately = true } = {}) {
+      // Build request object
+      const id = uid('req');
+      const req = {
+        id,
+        payee: data.payee,
+        amount: Number(data.amount).toFixed(2),
+        currency: data.currency,
+        description: data.description || '',
+        method: 'card-only', // enforced on pay page
+        createdAt: new Date().toISOString(),
+        status: 'pending' // pending|paid|cancelled
+      };
+
+      // Save locally
+      const list = readRequests();
+      list.push(req);
+      saveRequests(list);
+      renderRequests();
+
+      const link = makePayLink(req.id);
+
+      if (!sendImmediately) {
+        showToast('Saved as draft — request not sent.');
+        return req;
+      }
+
+      // Try navigator.share (native share sheet)
+      const title = `Payment request ${req.currency} ${req.amount}`;
+      const text = `${req.description || 'Payment request'} — ${req.currency} ${req.amount}. Pay here: ${link}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text, url: link });
+          showToast('Shared via native share sheet');
+          return req;
+        } catch (err) {
+          // user cancelled or error — continue to fallbacks
+          console.warn('share failed', err);
+        }
+      }
+
+      // Fallbacks:
+      // - If payee looks like phone: try sms:
+      // - If payee looks like email: try mailto:
+      if (isPhone(req.payee)) {
+        // sms:body format differs between platforms; we include text in body
+        const smsBody = encodeURIComponent(`${title}\n${text}`);
+        // use a universal sms: link — some clients prefer sms:+123?body=...
+        const smsUrl = `sms:${req.payee.replace(/\s+/g,'')}${navigator.userAgent.match(/iPhone|iPad|iPod/) ? '&' : '?'}body=${smsBody}`;
+        window.location.href = smsUrl;
+        // If SMS cannot be opened (e.g. desktop) user will see nothing — show fallback
+        setTimeout(() => {
+          // if desktop, prompt to copy
+          showCopyPrompt(link);
+        }, 800);
+        return req;
+      } else if (isEmail(req.payee)) {
+        const subject = encodeURIComponent(title);
+        const body = encodeURIComponent(text);
+        const mailto = `mailto:${req.payee}?subject=${subject}&body=${body}`;
+        window.location.href = mailto;
+        setTimeout(() => showCopyPrompt(link), 800);
+        return req;
+      } else {
+        // neither phone nor email — show copy fallback
+        showCopyPrompt(link);
+        return req;
+      }
+    }
+
+    function showCopyPrompt(link) {
+      try {
+        navigator.clipboard.writeText(link).then(() => {
+          alert('Payment link copied to clipboard. Paste it into SMS or email to the payee.');
+        }).catch(() => {
+          prompt('Copy this payment link and send to payee', link);
+        });
+      } catch (err) {
+        prompt('Copy this payment link and send to payee', link);
+      }
+    }
+
+    function showToast(msg, t = 2000) {
+      // simple toast
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position = 'fixed';
+      el.style.left = '50%';
+      el.style.transform = 'translateX(-50%)';
+      el.style.bottom = '18px';
+      el.style.padding = '10px 14px';
+      el.style.background = '#021026';
+      el.style.color = '#eafaff';
+      el.style.borderRadius = '10px';
+      el.style.zIndex = 9999;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), t);
+    }
+
+    // Hook up form
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payee = document.getElementById('payee').value.trim();
+      const amount = document.getElementById('amount').value;
+      const currency = document.getElementById('currency').value;
+      const description = document.getElementById('description').value.trim();
+
+      if (!payee || !amount || Number(amount) <= 0) {
+        alert('Please provide a valid payee and amount.');
+        return;
+      }
+      if (!isEmail(payee) && !isPhone(payee)) {
+        if (!confirm('Payee does not look like a phone number or email. Send link anyway?')) {
+          return;
+        }
+      }
+
+      // create and send
+      const btn = e.submitter || e.target.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+
+      try {
+        await createAndSend({ payee, amount, currency, description }, { sendImmediately: true });
+      } catch (err) {
+        console.error(err);
+        alert('Unable to create request. Try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create & Send';
+      }
     });
 
-    function renderRecent(){
-      const list = loadRequests();
-      const out = $('#recent');
-      if(!list.length) { out.textContent = 'No requests yet.'; return }
-      out.innerHTML = '<ul style="padding-left:18px;margin:0">' + list.slice(0,6).map(r=>`<li style="margin-bottom:8px">R ${fmt(r.amount)} • ${r.toPhone} • ${r.note || '—'} • ${new Date(r.createdAt).toLocaleString()}</li>`).join('') + '</ul>';
-    }
+    // Save draft handler
+    saveBtn.addEventListener('click', async () => {
+      const payee = document.getElementById('payee').value.trim();
+      const amount = document.getElementById('amount').value;
+      const currency = document.getElementById('currency').value;
+      const description = document.getElementById('description').value.trim();
+
+      if (!payee || !amount || Number(amount) <= 0) {
+        alert('Please provide a valid payee and amount to save a draft.');
+        return;
+      }
+
+      await createAndSend({ payee, amount, currency, description }, { sendImmediately: false });
+    });
+
+    // init
+    renderRequests();
   </script>
 </body>
 </html>
