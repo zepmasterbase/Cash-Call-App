@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CashCall — Show QR (Payee)</title>
+  <meta name="description" content="Display a short-lived CashCall QR containing payee id, wallet balance and an ephemeral token for peer-to-peer in-app payment (demo)." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --maxw:420px;
+      --bg-1:#eef6fb;
+      --bg-2:#ffffff;
+      --card:#ffffff;
+      --muted:#49626d;
+      --accent-a:#00bcd4;
+      --accent-b:#7b39ff;
+      --radius:14px;
+      --shadow: 0 18px 40px rgba(7,30,60,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#06202b}
+    body{ padding:18px; -webkit-font-smoothing:antialiased }
+    .wrap{ max-width:var(--maxw); margin:0 auto }
+
+    header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.95); border:1px solid rgba(7,32,44,0.06); box-shadow:var(--shadow) }
+    .brand{ display:flex; gap:10px; align-items:center }
+    .logo{ width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900 }
+    .title{ font-family:Manrope; font-weight:800; font-size:16px; margin:0 }
+
+    main{ margin-top:12px; display:grid; gap:12px }
+
+    .card{ background:var(--card); border-radius:14px; padding:14px; border:1px solid rgba(7,32,44,0.04); box-shadow:var(--shadow) }
+    .label{ color:var(--muted); font-size:13px; margin-bottom:8px }
+    .big{ font-family:Manrope; font-size:26px; font-weight:800; color:#021026; }
+
+    .qr-wrap{ display:grid; place-items:center; padding:14px; border-radius:12px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid rgba(7,32,44,0.03) }
+    #qrcode { width:220px; height:220px; display:block }
+
+    .controls{ display:flex; gap:8px; margin-top:12px }
+    .btn{ flex:1; padding:12px; border-radius:12px; border:0; font-weight:800; cursor:pointer }
+    .btn-primary{ background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026 }
+    .btn-ghost{ background:transparent; border:1px solid rgba(7,32,44,0.06); color:var(--muted); font-weight:700 }
+
+    .small{ font-size:13px; color:var(--muted) }
+    .meta{ margin-top:8px; font-size:13px; color:var(--muted) }
+
+    .payload { word-break:break-all; font-size:12px; background:rgba(0,0,0,0.03); padding:8px; border-radius:8px; margin-top:8px }
+
+    .switch { display:flex; gap:8px; align-items:center; margin-top:8px }
+    .switch input { margin-right:6px }
+
+    footer{ margin-top:12px; font-size:12px; color:var(--muted); text-align:center }
+    @media (max-width:380px){
+      #qrcode{ width:180px; height:180px }
+      .big{ font-size:22px }
+      .controls{ flex-direction:column }
+    }
+  </style>
+
+  <!-- simple QR library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">C</div>
+        <div>
+          <p class="title">CashCall — Show QR</p>
+          <p class="small" style="margin:0">Let a payer scan this to debit your in-app balance</p>
+        </div>
+      </div>
+
+      <nav><a class="small" href="dashboard.html">Dashboard</a></nav>
+    </header>
+
+    <main>
+      <section class="card" aria-labelledby="walletHeading">
+        <h2 id="walletHeading" class="label">Your wallet (demo)</h2>
+
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="big" id="walletBalance">—</div>
+            <div class="meta" id="walletCurrency">Currency</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">User ID</div>
+            <div id="userIdDisplay" style="font-weight:800">—</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+          <label class="small" style="margin:0; min-width:80px">Show as</label>
+          <input id="userIdInput" type="text" placeholder="user_abc123" style="flex:1; padding:8px; border-radius:8px; border:1px solid rgba(7,32,44,0.06)">
+        </div>
+
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+          <label class="small" style="margin:0; min-width:80px">Balance</label>
+          <input id="balanceInput" type="number" step="0.01" min="0" placeholder="1000.00" style="flex:1; padding:8px; border-radius:8px; border:1px solid rgba(7,32,44,0.06)">
+          <select id="balanceCurrency" style="padding:8px;border-radius:8px;border:1px solid rgba(7,32,44,0.06);margin-left:6px">
+            <option value="NGN">NGN</option>
+            <option value="ZAR">ZAR</option>
+            <option value="GHS">GHS</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+
+        <div class="switch">
+          <input id="autoRefresh" type="checkbox" checked>
+          <label for="autoRefresh" class="small">Auto-regenerate ephemeral token every <span id="regenSeconds">30</span>s</label>
+        </div>
+
+        <div class="meta" style="margin-top:8px">
+          <strong class="small">Token expiry:</strong> <span id="tokenExpiryLabel">not generated</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3 class="label">QR payload</h3>
+
+        <div class="qr-wrap" aria-hidden="false">
+          <canvas id="qrcode"></canvas>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="small">Payload (JSON)</div>
+          <div id="payloadText" class="payload">—</div>
+        </div>
+
+        <div class="controls">
+          <button id="regenBtn" class="btn btn-primary">Regenerate token</button>
+          <button id="copyBtn" class="btn btn-ghost">Copy payload</button>
+        </div>
+
+        <div style="margin-top:8px">
+          <div class="small">Alternate deep link (scaners that support URL):</div>
+          <div id="deepLink" class="payload">—</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3 class="label">Demo notes</h3>
+        <div class="small">
+          • This demo generates an ephemeral token client-side. <strong>In production:</strong> generate signed, short-lived tokens on your server and embed them in the QR. The backend must verify the token before allowing any wallet deduction.<br>
+          • The payer's app will decode the QR and call your backend endpoint (e.g. POST /api/payments/peer-deduct) with the token. Your server validates and debits the payee's wallet.
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="small">Local demo — payloads stored in browser storage only.</div>
+    </footer>
+  </div>
+
+  <script>
+    /*
+     payeeqr.html (demo)
+     - Creates a JSON payload that pay.html can scan:
+         { userId, balance_small, token, expires_at }
+       and a cashcall://deep-link: cashcall://pay?userId=...&balance_small=...&token=...
+     - In production: DO NOT generate tokens here. Use server endpoint to issue signed tokens.
+    */
+
+    // Storage key to simulate logged-in user wallet (matches earlier pages)
+    const USER_KEY = 'cashcall_user';
+    const WALLET_KEY = 'cashcall_wallet';
+
+    // DOM
+    const userIdInput = document.getElementById('userIdInput');
+    const userIdDisplay = document.getElementById('userIdDisplay');
+    const balanceInput = document.getElementById('balanceInput');
+    const balanceCurrency = document.getElementById('balanceCurrency');
+    const walletBalance = document.getElementById('walletBalance');
+    const walletCurrencyLabel = document.getElementById('walletCurrency');
+    const qrcodeCanvas = document.getElementById('qrcode');
+    const payloadText = document.getElementById('payloadText');
+    const deepLinkEl = document.getElementById('deepLink');
+    const regenBtn = document.getElementById('regenBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const tokenExpiryLabel = document.getElementById('tokenExpiryLabel');
+    const autoRefresh = document.getElementById('autoRefresh');
+    const regenSecondsLabel = document.getElementById('regenSeconds');
+
+    // config
+    const DEFAULT_REGEN_SECONDS = 30;
+    let regenIntervalSec = DEFAULT_REGEN_SECONDS;
+    let tokenExpiry = null;
+    let regenTimer = null;
+
+    // helper: smallest unit
+    function toSmallest(amount) {
+      const n = Number(amount || 0);
+      return Math.round(n * 100);
+    }
+    function fromSmallest(small, currency) {
+      try { return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(Number(small)/100); }
+      catch (e) { return (currency ? currency + ' ' : '') + (Number(small)/100).toFixed(2); }
+    }
+
+    // very small demo token generator (not secure). In prod, server should produce signed tokens.
+    function makeDemoToken() {
+      // 24 char random + timestamp
+      return 'demo_' + Math.random().toString(36).slice(2,12) + Date.now().toString(36).slice(-6);
+    }
+
+    // build payload
+    function buildPayload(userId, balanceMajor, currency, token, expiresAt) {
+      const payload = {
+        userId: String(userId),
+        balance_small: toSmallest(balanceMajor),
+        currency: String(currency || 'USD'),
+        token: String(token),
+        expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
+      };
+      return payload;
+    }
+
+    // generate deep link
+    function buildDeepLink(payload) {
+      // cashcall://pay?userId=...&balance_small=...&token=...&currency=...
+      const base = 'cashcall://pay';
+      const params = new URLSearchParams();
+      params.set('userId', payload.userId);
+      params.set('balance_small', String(payload.balance_small));
+      params.set('token', payload.token);
+      params.set('currency', payload.currency || 'USD');
+      if (payload.expires_at) params.set('expires_at', payload.expires_at);
+      return `${base}?${params.toString()}`;
+    }
+
+    // render QR using qrcode library (canvas)
+    async function renderQrFromPayload(payload) {
+      const json = JSON.stringify(payload);
+      try {
+        await QRCode.toCanvas(qrcodeCanvas, json, { width: 240, margin: 1, color: { dark: '#021026', light: '#ffffff' } });
+      } catch (err) {
+        console.error('qrcode render error', err);
+      }
+      payloadText.textContent = json;
+      deepLinkEl.textContent = buildDeepLink(payload);
+      tokenExpiryLabel.textContent = payload.expires_at ? payload.expires_at : 'no expiry';
+    }
+
+    // persist demo user/wallet for convenience
+    function saveDemoSession(userId, balanceMajor, currency) {
+      const user = { id: userId, name: userId };
+      const wallet = { userId, currency, balance: Number(balanceMajor).toFixed(2), balance_small: toSmallest(balanceMajor) };
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      localStorage.setItem(WALLET_KEY, JSON.stringify(wallet));
+    }
+
+    function readDemoSession() {
+      try {
+        const u = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+        const w = JSON.parse(localStorage.getItem(WALLET_KEY) || 'null');
+        return { user: u, wallet: w };
+      } catch (e) { return { user: null, wallet: null }; }
+    }
+
+    // main generator which creates token, sets expiry and updates QR
+    function generateAndRender() {
+      const userId = userIdInput.value.trim() || ('user_' + Math.random().toString(36).slice(2,8));
+      const balanceVal = Number(balanceInput.value || 0);
+      const currency = balanceCurrency.value || 'USD';
+
+      // demo: store session so dashboard/payee can read
+      saveDemoSession(userId, balanceVal, currency);
+
+      const token = makeDemoToken();
+      const expiresAt = new Date(Date.now() + regenIntervalSec * 1000);
+
+      tokenExpiry = expiresAt;
+      const payload = buildPayload(userId, balanceVal, currency, token, expiresAt);
+      renderQrFromPayload(payload);
+      // also store current payload to localStorage for quick demo verification
+      localStorage.setItem('cashcall_current_qr', JSON.stringify(payload));
+    }
+
+    function startAutoRegen() {
+      stopAutoRegen();
+      if (!autoRefresh.checked) return;
+      regenTimer = setInterval(() => {
+        generateAndRender();
+      }, regenIntervalSec * 1000);
+    }
+    function stopAutoRegen() {
+      if (regenTimer) { clearInterval(regenTimer); regenTimer = null; }
+    }
+
+    // copy payload as JSON
+    copyBtn.addEventListener('click', async () => {
+      const payload = document.getElementById('payloadText').textContent;
+      if (!payload || payload === '—') return;
+      try {
+        await navigator.clipboard.writeText(payload);
+        alert('Payload copied to clipboard');
+      } catch (err) {
+        prompt('Copy payload', payload);
+      }
+    });
+
+    // regenerate button
+    regenBtn.addEventListener('click', () => {
+      generateAndRender();
+    });
+
+    // wire input changes
+    userIdInput.addEventListener('input', () => {
+      userIdDisplay.textContent = userIdInput.value || '—';
+    });
+
+    balanceInput.addEventListener('input', () => {
+      const b = Number(balanceInput.value || 0);
+      walletBalance.textContent = fromSmallest(toSmallest(b), balanceCurrency.value);
+      walletCurrencyLabel.textContent = balanceCurrency.value;
+    });
+
+    balanceCurrency.addEventListener('change', () => {
+      const b = Number(balanceInput.value || 0);
+      walletCurrencyLabel.textContent = balanceCurrency.value;
+      walletBalance.textContent = fromSmallest(toSmallest(b), balanceCurrency.value);
+    });
+
+    autoRefresh.addEventListener('change', () => {
+      startAutoRegen();
+    });
+
+    // init: load any saved session or set defaults
+    (function init() {
+      const s = readDemoSession();
+      if (s && s.user && s.wallet) {
+        userIdInput.value = s.user.id || '';
+        balanceInput.value = (s.wallet.balance != null) ? Number(s.wallet.balance).toFixed(2) : '0.00';
+        balanceCurrency.value = s.wallet.currency || 'NGN';
+      } else {
+        userIdInput.value = 'user_' + Math.random().toString(36).slice(2,8);
+        balanceInput.value = '1000.00';
+        balanceCurrency.value = 'NGN';
+      }
+      userIdDisplay.textContent = userIdInput.value;
+      walletCurrencyLabel.textContent = balanceCurrency.value;
+      walletBalance.textContent = fromSmallest(toSmallest(Number(balanceInput.value || 0)), balanceCurrency.value);
+
+      // set regen seconds label
+      regenSecondsLabel.textContent = String(regenIntervalSec);
+
+      generateAndRender();
+      startAutoRegen();
+    })();
+
+    // cleanup on leave
+    window.addEventListener('pagehide', () => stopAutoRegen());
+    window.addEventListener('beforeunload', () => stopAutoRegen());
+  </script>
+</body>
+</html>
