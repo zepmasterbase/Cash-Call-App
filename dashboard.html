@@ -39,7 +39,7 @@
 
     .hdr-actions { display:flex; gap:8px; align-items:center; }
     .btn-icon { width:40px; height:40px; display:grid; place-items:center; border-radius:10px; border:1px solid rgba(7,32,44,0.04); background:transparent; cursor:pointer; font-weight:700; color:var(--muted); }
-    .btn-ghost { padding:8px 12px; border-radius:10px; background:transparent; border:1px solid rgba(7,32,44,0.04); color:var(--muted); cursor:pointer; font-weight:700; }
+    .btn-ghost { padding:8px 12px; border-radius:10px; background:transparent; border:1px solid rgba(7,32,44,0.04); color:var(--muted); cursor:pointer; font-weight:700 }
 
     main{ margin-top:12px; display:grid; gap:12px; }
 
@@ -104,13 +104,15 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
             <a href="request.html" class="action" style="text-decoration:none;display:inline-block;padding:8px 12px;font-size:13px;">Request</a>
-            <a href="pay.html" class="action ghost" style="text-decoration:none;display:inline-block;padding:8px 12px;font-size:13px;">Pay</a>
+            <!-- Pay now opens payee QR generator so others can scan you (per request) -->
+            <a href="payeeqr.html" class="action ghost" style="text-decoration:none;display:inline-block;padding:8px 12px;font-size:13px;">Pay (show QR)</a>
           </div>
         </div>
 
         <div class="quick-actions" style="margin-top:12px">
           <a href="withdrawal.html" class="action" style="text-decoration:none;display:inline-block;">Withdraw</a>
-          <button id="receiveQuick" class="action ghost" style="display:inline-block;">Quick receive</button>
+          <!-- Quick receive now opens pay.html (scanner) as requested -->
+          <button id="receiveQuick" class="action ghost" style="display:inline-block;">Quick receive (Scan)</button>
         </div>
       </section>
 
@@ -129,18 +131,20 @@
 
   <script>
     /**
-     * dashboard.html
+     * dashboard.html (updated)
      *
-     * - Reads session from localStorage (preferred) or sessionStorage: keys
-     *   cashcall_token, cashcall_user, cashcall_wallet
-     * - Renders wallet balance and transaction history
-     * - Shows gross/fee/net lines per transaction if present
-     * - Allows quick receive (demo) which adds a transaction and updates wallet
-     * - Logout clears session and redirects to index.html
+     * Changes:
+     * - Pay link -> payeeqr.html (show your QR to payer)
+     * - Quick receive -> opens pay.html scanner (instead of demo credit)
+     * - Withdraw -> withdrawal.html (unchanged)
+     * - Award new users 100 units (in their wallet currency) once, using per-user localStorage flag
      *
-     * Notes:
-     * - All critical financial calculations MUST be performed and persisted on the server.
-     * - The frontend is for display and demo/test flows only.
+     * Storage keys used by other pages:
+     * - cashcall_token
+     * - cashcall_user (JSON)
+     * - cashcall_wallet (JSON)  { userId, currency, balance (major string), balance_small (int) }
+     * - cashcall_history (array of tx)
+     * - cashcall_reward_granted_<userId>  (flag)
      */
 
     const TOKEN_KEY = 'cashcall_token';
@@ -202,13 +206,9 @@
       // wallet.balance may be stored as major or smallest unit. Normalize:
       let balanceSmall = null;
       if (typeof w.balance === 'number') {
-        // ambiguous: assume major units (like 1240.00) OR small? We will treat as major if >1000 and has decimals? Safer: if wallet.balance >= 1 and not an integer of cents? We'll check for fractional part.
-        // To avoid assumptions, support both shapes:
-        // If wallet.balance_small present, prefer it.
         if (w.balance_small != null) balanceSmall = Number(w.balance_small);
         else balanceSmall = Math.round(Number(w.balance) * 100);
       } else {
-        // string -> parse float
         const n = parseFloat(String(w.balance || '0').replace(/,/g,''));
         balanceSmall = Math.round(n * 100);
       }
@@ -277,11 +277,9 @@
         else if (tx.amount != null) grossSmall = Math.round(Number(tx.amount) * 100);
         else grossSmall = 0;
 
-        // if fee present, show fee line beneath
         let feeSmall = (tx.fee_small != null) ? Number(tx.fee_small) : (tx.fee != null ? Math.round(Number(tx.fee) * 100) : null);
         let netSmall = (tx.net_small != null) ? Number(tx.net_small) : (tx.net != null ? Math.round(Number(tx.net) * 100) : null);
 
-        // default net = gross - fee if fee present
         if (feeSmall != null && netSmall == null) netSmall = grossSmall - feeSmall;
         if (netSmall == null) netSmall = grossSmall;
 
@@ -292,7 +290,6 @@
         time.textContent = tx.time ? timeAgo(new Date(tx.time)) : (tx.createdAt ? timeAgo(new Date(tx.createdAt)) : '');
 
         right.appendChild(amt);
-        // fee / net small
         if (feeSmall != null) {
           const feeLine = document.createElement('div');
           feeLine.style.fontSize = '12px';
@@ -322,7 +319,7 @@
       return d + 'd';
     }
 
-    // Add demo transaction and credit wallet (used by Quick Receive)
+    // Add demo transaction and credit wallet (used by Quick Receive previously)
     function addDemoTransaction(tx) {
       const cur = loadHistory();
       cur.push(tx);
@@ -384,6 +381,49 @@
       window.location.href = 'index.html';
     }
 
+    // Utility: convert major (string/number) to smallest integer
+    function majorToSmall(major) {
+      const n = typeof major === 'number' ? major : parseFloat(String(major || '0').replace(/,/g,''));
+      if (isNaN(n)) return 0;
+      return Math.round(n * 100);
+    }
+
+    // grant welcome reward of 100 units in user's wallet currency (only once per user)
+    function grantWelcomeRewardOnce(session) {
+      if (!session || !session.user || !session.wallet) return;
+      const userId = session.user.id || session.user.email || session.user.name;
+      if (!userId) return;
+
+      const flagKey = `cashcall_reward_granted_${userId}`;
+      if (localStorage.getItem(flagKey)) return; // already given
+
+      // decide 100 in the wallet currency
+      const rewardMajor = 100; // 100 units of their chosen currency
+      const rewardSmall = majorToSmall(rewardMajor);
+
+      // create tx: credit gross = reward, fee = 0, net = reward
+      const tx = {
+        id: 'reward_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        type: 'credit',
+        title: 'Welcome reward',
+        subtitle: `Sign-up reward — ${rewardMajor} ${session.wallet.currency}`,
+        gross_small: rewardSmall,
+        fee_small: 0,
+        net_small: rewardSmall,
+        currency: session.wallet.currency || 'USD',
+        time: new Date().toISOString(),
+        status: 'settled'
+      };
+
+      // persist tx and update wallet
+      addDemoTransaction(tx);
+      updateWalletBalance(rewardSmall);
+
+      // set flag
+      localStorage.setItem(flagKey, new Date().toISOString());
+      console.info(`Granted welcome reward ${rewardMajor} ${session.wallet.currency} to ${userId}`);
+    }
+
     // Initialize dashboard
     (function init(){
       const session = readSession();
@@ -395,6 +435,14 @@
       renderHeader(session);
       renderWallet(session);
       renderHistory();
+
+      // if wallet appears newly created (balance small missing or zero) or reward not given, grant welcome reward
+      try {
+        // grant reward if not given before
+        grantWelcomeRewardOnce(session);
+      } catch (err) {
+        console.warn('welcome reward failed', err);
+      }
 
       // wire buttons
       document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -408,34 +456,10 @@
         renderHistory();
       });
 
+      // Quick receive now opens pay.html (scanner) per user request
       document.getElementById('receiveQuick').addEventListener('click', () => {
-        // Demo quick receive: create a small credit and update wallet
-        const sessionNow = readSession();
-        if (!sessionNow) { alert('Not signed in'); return; }
-
-        // demo amount: 50 units in major -> smallest = 5000
-        const amountSmall = 5000;
-        const currency = sessionNow.wallet.currency || 'USD';
-        const tx = {
-          id: 'tx_' + Math.random().toString(36).slice(2),
-          type: 'credit',
-          title: 'Quick receive',
-          subtitle: 'Demo incoming payment',
-          gross_small: amountSmall,
-          fee_small: Math.round(amountSmall * 2 / 100), // 2% fee for display (server should compute real fee)
-          net_small: amountSmall - Math.round(amountSmall * 2 / 100),
-          currency,
-          time: new Date().toISOString(),
-          status: 'settled'
-        };
-
-        // persist
-        addDemoTransaction(tx);
-        // update wallet (credit net amount)
-        updateWalletBalance(tx.net_small);
-
-        // feedback
-        alert('Demo payment received — check history');
+        // open pay.html (scanner) so user can scan a payer's QR to receive
+        window.location.href = 'pay.html';
       });
     })();
 
@@ -448,7 +472,7 @@
         const seed = {
           id: 'seed_' + Date.now(),
           type: 'credit',
-          title: 'Welcome bonus',
+          title: 'Welcome bonus (seed)',
           subtitle: 'Thanks for signing up',
           gross_small: 1000,    // 10.00 in major unit
           fee_small: Math.round(1000 * 2 / 100),
