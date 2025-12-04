@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CashCall — Dashboard</title>
+  <meta name="description" content="CashCall dashboard — request money, pay instantly, withdraw and manage activity." />
+  <style>
+    /* ---------- Reset & Base ---------- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#f4f7fb 0%, #ffffff 70%);
+      color:#07112a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    button{font-family:inherit}
+
+    /* ---------- Layout ---------- */
+    .app {
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
+      gap:20px;
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      background:linear-gradient(180deg,#07112a,#08203a);
+      color:#fff;
+      padding:22px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .brand {display:flex;align-items:center;gap:12px}
+    .logo {
+      width:52px;height:52px;border-radius:12px;
+      background:linear-gradient(180deg,#2b6cf6,#1e40af);
+      display:inline-flex;align-items:center;justify-content:center;
+      font-weight:800;color:#fff;font-size:18px;box-shadow:0 8px 30px rgba(16,36,84,0.35);
+    }
+    .brand h1{margin:0;font-size:18px;font-weight:700}
+    .tagline{font-size:13px;color:rgba(255,255,255,0.8)}
+
+    nav.nav{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;color:rgba(255,255,255,0.94);
+      cursor:pointer;font-weight:700;font-size:14px;transition:all .12s;
+    }
+    .nav-item:hover{transform:translateX(6px);opacity:0.98}
+    .nav-item .icon{width:36px;height:36;border-radius:10px;background:rgba(255,255,255,0.06);display:inline-flex;align-items:center;justify-content:center}
+    .nav-item.secondary{background:rgba(255,255,255,0.03) }
+
+    .wallet {
+      margin-top:12px;
+      background:rgba(255,255,255,0.03);
+      padding:12px;border-radius:12px;
+    }
+    .wallet h4{margin:0 0 6px;font-size:13px;color:rgba(255,255,255,0.9)}
+    .balance-big{font-size:22px;font-weight:800;color:#fff}
+    .wallet-actions{display:flex;gap:8px;margin-top:10px}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700}
+    .btn-accent{background:#ffd166;color:#122022;padding:8px 10px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+
+    .legal{margin-top:auto;color:rgba(255,255,255,0.6);font-size:13px}
+
+    /* ---------- Main ---------- */
+    .main {
+      padding:22px;
+    }
+    header.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+    .search {display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:8px 12px;min-width:240px;box-shadow:0 10px 30px rgba(9,30,63,0.06)}
+    .search input{border:0;outline:none;font-size:15px;width:220px}
+    .actions{display:flex;align-items:center;gap:12px}
+    .profile{display:flex;align-items:center;gap:10px}
+    .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#2b6cf6,#1e40af);color:#fff;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+
+    /* grid layout */
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px;align-items:start}
+    .card{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:14px;padding:18px;border:1px solid rgba(6,30,63,0.04);box-shadow:0 8px 30px rgba(8,30,63,0.06)}
+    .card h3{margin:0 0 10px;font-size:18px}
+    .muted{color:#64748b;font-size:13px}
+
+    /* quick request form */
+    .form-row{display:flex;gap:8px;flex-wrap:wrap}
+    input[type="tel"], input[type="number"], input[type="text"], select {
+      padding:12px;border-radius:10px;border:1px solid #e6eefc;font-size:15px;outline:none;background:#fff;flex:1;min-width:0;
+    }
+    .primary-btn{background:#2563eb;color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
+
+    /* requests list */
+    .requests{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .request-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fbff);border:1px solid rgba(37,99,235,0.04)}
+    .request-meta{color:#64748b;font-size:13px}
+    .request-amount{font-weight:800;color:#07112a}
+
+    .tag-pending{background:#fff4e6;color:#92400e;padding:6px 8px;border-radius:8px;font-weight:700}
+    .tag-paid{background:#e6ffef;color:#047857;padding:6px 8px;border-radius:8px;font-weight:700}
+
+    /* activity */
+    .activity-list{display:flex;flex-direction:column;gap:10px}
+    .activity-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:#fbfdff;border:1px solid rgba(6,30,63,0.03)}
+    .act-avatar{width:44px;height:44px;border-radius:10px;background:#eef5ff;display:inline-flex;align-items:center;justify-content:center;color:#2b6cf6;font-weight:800}
+
+    /* KPIs */
+    .kpis{display:flex;gap:12px;margin-top:8px}
+    .kpi{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfdff);text-align:center}
+    .kpi h4{margin:0;font-size:20px}
+    .kpi p{margin:6px 0 0;color:#64748b}
+
+    /* small screens */
+    @media(max-width:980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{flex-direction:row;align-items:center;gap:12px;padding:12px 14px;overflow:auto}
+      nav.nav{flex-direction:row}
+      .brand h1{display:none}
+      .main{padding:16px}
+      .grid{grid-template-columns:1fr}
+      .card{padding:14px}
+      .search input{width:120px}
+      .wallet{display:none}
+    }
+    @media(max-width:520px){
+      .logo{width:44px;height:44px}
+      .avatar{width:36px;height:36px}
+      .search input{width:90px}
+    }
+
+    /* toast */
+    .toast{position:fixed;right:20px;bottom:20px;background:#07112a;color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 10px 30px rgba(3,7,18,0.4);display:none;z-index:9999}
+    .toast.show{display:block;animation:pop .32s ease}
+    @keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+
+    /* utilities */
+    .muted-2{color:#94a3b8;font-size:13px}
+    .center{display:flex;align-items:center;justify-content:center}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="CashCall dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="brand" role="banner">
+        <div class="logo" aria-hidden="true">CC</div>
+        <div>
+          <h1>CashCall</h1>
+          <div class="tagline">Built for Africa • Global-ready</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-item secondary" href="dashboard.html" aria-current="page">
+          <span class="icon" aria-hidden="true">🏠</span> Dashboard
+        </a>
+
+        <a class="nav-item" href="request.html">
+          <span class="icon" aria-hidden="true">📩</span> Request
+        </a>
+
+        <a class="nav-item" href="pay.html">
+          <span class="icon" aria-hidden="true">⚡</span> Pay (Scan / Instant)
+        </a>
+
+        <a class="nav-item" href="withdraw.html">
+          <span class="icon" aria-hidden="true">💸</span> Withdraw
+        </a>
+
+        <div style="height:8px"></div>
+
+        <div class="wallet" aria-hidden="false">
+          <h4>Your Wallet</h4>
+          <div class="balance-big">R <span id="walletBalance">0.00</span></div>
+          <div class="wallet-actions">
+            <a href="withdraw.html" class="btn-ghost" role="button">Withdraw</a>
+            <a href="pay.html" class="btn-accent" role="button">Pay Now</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="legal">
+        <div class="muted">Version 0.2 • Demo</div>
+        <div style="height:8px"></div>
+        <div class="muted" style="font-size:13px">© <span id="year"></span> CashCall</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main" role="main">
+      <header class="topbar" role="banner">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="search" role="search" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#94a3b8" stroke-width="1.8"/></svg>
+            <input id="q" placeholder="Search by name, phone or note..." aria-label="Search requests"/>
+          </div>
+          <div class="muted-2">Welcome, <strong id="userName">Guest</strong></div>
+        </div>
+
+        <div class="actions">
+          <div class="profile" id="profileBtn" tabindex="0" aria-haspopup="true" aria-expanded="false">
+            <div class="avatar" id="avatar">CC</div>
+            <div style="text-align:right">
+              <div id="userPhone" class="muted-2">+27 ••• •••</div>
+              <div class="muted-2" style="font-size:13px">Account</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard grid -->
+      <section class="grid" aria-live="polite">
+        <!-- Left column -->
+        <div>
+          <div class="card">
+            <h3>Quick Request</h3>
+            <p class="muted">Request money by phone number — payer will receive a secure link. For full request flows, open the Request page.</p>
+
+            <form id="requestForm" style="margin-top:12px" autocomplete="off">
+              <div class="form-row">
+                <input id="toPhone" type="tel" placeholder="+27 82 123 4567" required aria-label="Recipient phone" />
+                <input id="amount" type="number" placeholder="Amount (ZAR)" min="1" step="0.01" required aria-label="Amount in ZAR" />
+              </div>
+
+              <div style="margin-top:10px">
+                <input id="note" type="text" placeholder="Reference / note (e.g., Dinner split)" aria-label="Reference note" />
+              </div>
+
+              <div style="margin-top:12px;display:flex;gap:8px">
+                <button type="submit" class="primary-btn">Request Money</button>
+                <a href="request.html" class="primary-btn" style="background:#10b981">Open Request Page</a>
+                <button type="button" class="btn-ghost" id="resetForm">Clear</button>
+              </div>
+            </form>
+
+            <div class="muted" style="margin-top:12px;font-size:13px">Tip: Use the Pay (Scan / Instant) page for in-person QR or scan-to-pay flows.</div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h3>Outstanding Requests</h3>
+            <div id="noRequests" class="muted" style="padding:12px">No outstanding requests yet.</div>
+            <div class="requests" id="requestsList" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <aside>
+          <div class="card">
+            <h3>Recent Activity</h3>
+            <div class="activity-list" id="activityList">
+              <!-- recent items -->
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>Quick Stats</h3>
+            <div class="kpis">
+              <div class="kpi">
+                <h4 id="kTotal">R 0.00</h4>
+                <p>Total requested</p>
+              </div>
+              <div class="kpi">
+                <h4 id="kOutstanding">R 0.00</h4>
+                <p>Outstanding</p>
+              </div>
+              <div class="kpi">
+                <h4 id="kPaid">R 0.00</h4>
+                <p>Paid</p>
+              </div>
+            </div>
+            <div style="margin-top:12px" class="muted">Wallet balance is a placeholder for demo. Connect to backend for real balances and withdrawals.</div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <a href="withdraw.html" class="btn-ghost">Withdraw</a>
+              <a href="pay.html" class="primary-btn">Pay / Scan</a>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* ---------- Demo state & helpers ---------- */
+    const STORAGE_KEY = 'cashcall_requests_v2';
+    const SESSION_KEY = 'cashcall_session_v2';
+
+    const $ = (s, ctx=document) => ctx.querySelector(s);
+    const $$ = (s, ctx=document) => Array.from(ctx.querySelectorAll(s));
+    const fmt = v => Number(v).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function showToast(msg, t=2400){
+      const el = $('#toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._to);
+      el._to = setTimeout(()=> el.classList.remove('show'), t);
+    }
+
+    // Seed demo data if empty
+    function seedDemo(){
+      if(localStorage.getItem(STORAGE_KEY)) return;
+      const demo = [
+        { id:'r1', toName:'Aisha', toPhone:'+254712345678', amount:150.00, currency:'ZAR', note:'Neat beads', status:'pending', createdAt: Date.now()-1000*60*60*20 },
+        { id:'r2', toName:'Sipho', toPhone:'+27821234567', amount:320.00, currency:'ZAR', note:'Design work', status:'paid', createdAt: Date.now()-1000*60*60*72, paidAt: Date.now()-1000*60*60*24 }
+      ];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+    }
+
+    // Demo session user
+    function ensureSession(){
+      if(!localStorage.getItem(SESSION_KEY)){
+        const user = { fullname:'Demo User', phone:'+27 82 000 0000', balance: 420.00 };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+      }
+    }
+
+    function getSession(){ return JSON.parse(localStorage.getItem(SESSION_KEY) || '{}'); }
+    function saveSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+
+    function loadRequests(){ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    function saveRequests(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+    function newId(){ return 'r' + Math.random().toString(36).slice(2,9); }
+
+    /* ---------- UI Rendering ---------- */
+    function renderUser(){
+      const s = getSession();
+      $('#userName').textContent = s.fullname || 'Guest';
+      $('#userPhone').textContent = s.phone || '';
+      $('#avatar').textContent = (s.fullname || 'C').split(' ').map(n=>n[0]).slice(0,2).join('');
+      $('#walletBalance').textContent = fmt(s.balance || 0);
+    }
+
+    function renderRequests(q=''){
+      const list = loadRequests().sort((a,b)=>b.createdAt - a.createdAt);
+      const out = $('#requestsList'); out.innerHTML = '';
+      const outstanding = list.filter(r => r.status === 'pending');
+      $('#noRequests').style.display = outstanding.length ? 'none' : 'block';
+
+      const query = (q||'').toLowerCase().trim();
+      const filtered = list.filter(r=>{
+        if(!query) return true;
+        return (r.toName && r.toName.toLowerCase().includes(query)) ||
+               (r.toPhone && r.toPhone.toLowerCase().includes(query)) ||
+               (r.note && r.note.toLowerCase().includes(query));
+      });
+
+      filtered.forEach(r=>{
+        const div = document.createElement('div');
+        div.className = 'request-item';
+        div.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:56px;height:56px;border-radius:10px;background:#eef5ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1e40af">
+              ${r.toName ? r.toName.split(' ').map(n=>n[0]).join('').slice(0,2) : r.toPhone.slice(-2)}
+            </div>
+            <div>
+              <div style="font-weight:800">${r.toName || r.toPhone} <span class="muted" style="font-weight:400">• ${r.toPhone}</span></div>
+              <div class="request-meta">${r.note || 'No reference'} • ${new Date(r.createdAt).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="text-align:right">
+              <div class="request-amount">R ${fmt(r.amount)}</div>
+              <div class="muted" style="font-size:13px">${r.currency || 'ZAR'}</div>
+            </div>
+            <div>
+              <div class="${r.status === 'paid' ? 'tag-paid' : 'tag-pending'}">${r.status === 'paid' ? 'Paid' : 'Pending'}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              ${r.status === 'pending' ? `<button class="primary-btn payBtn" data-id="${r.id}">Mark Paid</button>` : ''}
+              <button class="btn-ghost deleteBtn" data-id="${r.id}">Delete</button>
+            </div>
+          </div>
+        `;
+        out.appendChild(div);
+      });
+
+      renderStats(list);
+      renderActivity(list);
+    }
+
+    function renderStats(list){
+      const total = list.reduce((s,r)=>s + Number(r.amount||0), 0);
+      const paid = list.filter(r=>r.status==='paid').reduce((s,r)=>s + Number(r.amount||0), 0);
+      const outstanding = list.filter(r=>r.status==='pending').reduce((s,r)=>s + Number(r.amount||0), 0);
+      $('#kTotal').textContent = `R ${fmt(total)}`;
+      $('#kPaid').textContent = `R ${fmt(paid)}`;
+      $('#kOutstanding').textContent = `R ${fmt(outstanding)}`;
+    }
+
+    function renderActivity(list){
+      const out = $('#activityList'); out.innerHTML = '';
+      const recent = list.slice().sort((a,b)=>b.createdAt - a.createdAt).slice(0,6);
+      if(recent.length === 0) { out.innerHTML = `<div class="muted">No recent activity</div>`; return; }
+      recent.forEach(r=>{
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        item.innerHTML = `
+          <div class="act-avatar">${r.toName ? r.toName.split(' ').map(n=>n[0]).join('').slice(0,2) : '??'}</div>
+          <div style="flex:1">
+            <div style="font-weight:800">${r.toName || r.toPhone} <span class="muted" style="font-weight:400">• ${r.note || 'Request'}</span></div>
+            <div class="muted" style="font-size:13px">${new Date(r.createdAt).toLocaleString()}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800">R ${fmt(r.amount)}</div>
+            <div class="muted" style="font-size:13px">${r.status}</div>
+          </div>
+        `;
+        out.appendChild(item);
+      });
+    }
+
+    /* ---------- Actions ---------- */
+    document.addEventListener('DOMContentLoaded', ()=>{
+      seedDemo();
+      ensureSession();
+      $('#year').textContent = new Date().getFullYear();
+      renderUser();
+      renderRequests();
+
+      // Quick request form
+      $('#requestForm').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const toPhone = $('#toPhone').value.trim();
+        const amount = Number($('#amount').value);
+        const note = $('#note').value.trim();
+        if(!/^\+?\d{7,15}$/.test(toPhone)) return showToast('Enter valid phone including country code (e.g. +27...)');
+        if(!amount || amount <= 0) return showToast('Enter a valid amount');
+        const r = { id:newId(), toPhone, toName:'', amount:Number(amount.toFixed(2)), currency:'ZAR', note, status:'pending', createdAt: Date.now() };
+        const list = loadRequests(); list.push(r); saveRequests(list);
+        showToast('Request created (demo). SMS/link simulated.');
+        $('#toPhone').value=''; $('#amount').value=''; $('#note').value='';
+        renderRequests($('#q').value);
+      });
+
+      // Clear form
+      $('#resetForm').addEventListener('click', ()=> { $('#toPhone').value=''; $('#amount').value=''; $('#note').value=''; });
+
+      // Search
+      $('#q').addEventListener('input', (e)=> renderRequests(e.target.value));
+
+      // Delegate request list actions
+      $('#requestsList').addEventListener('click', (e)=>{
+        const payBtn = e.target.closest('.payBtn');
+        const delBtn = e.target.closest('.deleteBtn');
+        if(payBtn){ markPaid(payBtn.dataset.id); }
+        if(delBtn){ if(confirm('Delete this request?')) deleteRequest(delBtn.dataset.id); }
+      });
+
+      // Quick nav links: Request, Pay, Withdraw are simple hrefs to pages
+      // Sign out demo (clear session)
+      // (Add sign out UI if desired)
+    });
+
+    function markPaid(id){
+      const list = loadRequests();
+      const idx = list.findIndex(r=>r.id===id);
+      if(idx === -1) return showToast('Request not found');
+      if(list[idx].status === 'paid') return showToast('Already paid');
+      list[idx].status = 'paid';
+      list[idx].paidAt = Date.now();
+      saveRequests(list);
+
+      // Increase demo wallet balance
+      const s = getSession();
+      s.balance = Number((Number(s.balance||0) + Number(list[idx].amount)).toFixed(2));
+      saveSession(s);
+
+      renderUser();
+      renderRequests($('#q').value);
+      showToast('Marked paid — wallet updated (demo)');
+    }
+
+    function deleteRequest(id){
+      let list = loadRequests();
+      list = list.filter(r => r.id !== id);
+      saveRequests(list);
+      renderRequests($('#q').value);
+      showToast('Request removed');
+    }
+
+    /* ---------- Init helpers ---------- */
+    function seedDemo(){ if(!localStorage.getItem(STORAGE_KEY)){ const demo=[{ id:'r1', toName:'Aisha', toPhone:'+254712345678', amount:150, currency:'ZAR', note:'Neat beads', status:'pending', createdAt:Date.now()-1000*60*60*20 },{ id:'r2', toName:'Sipho', toPhone:'+27821234567', amount:320, currency:'ZAR', note:'Design work', status:'paid', createdAt:Date.now()-1000*60*60*72, paidAt:Date.now()-1000*60*60*24 }]; localStorage.setItem(STORAGE_KEY, JSON.stringify(demo)); } }
+    function ensureSession(){ if(!localStorage.getItem(SESSION_KEY)){ const user={ fullname:'Demo User', phone:'+27 82 000 0000', balance:420.00 }; localStorage.setItem(SESSION_KEY, JSON.stringify(user)); } }
+  </script>
+</body>
+</html>
