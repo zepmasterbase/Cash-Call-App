@@ -3,335 +3,373 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>CashCall — Request Payment</title>
-  <meta name="description" content="Create a payment request to a payee via phone or email." />
+  <title>Pay — CashCall</title>
+  <meta name="description" content="Secure card payments (Paystack) for CashCall requests." />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#f6fbff; --card:#fff; --muted:#5f7582;
-      --accent-a:#00bcd4; --accent-b:#8450ff;
-      --radius:12px; --maxw:420px;
+      --bg-1:#eef6fb;
+      --bg-2:#ffffff;
+      --card:#ffffff;
+      --muted:#546b76;
+      --accent-a:#00bcd4;
+      --accent-b:#8450ff;
+      --radius:14px;
+      --maxw:420px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;padding:18px;background:linear-gradient(180deg,var(--bg),#fff);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#06202b}
-    .wrap{max-width:var(--maxw);margin:0 auto}
-    header{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;background:rgba(255,255,255,0.9);border:1px solid rgba(6,32,44,0.04)}
-    h1{margin:0;font-family:Manrope;font-size:16px}
-    .card{margin-top:14px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(6,32,44,0.04);box-shadow:0 14px 30px rgba(4,18,30,0.04)}
-    .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-    label{font-weight:700;font-size:13px;color:#274048}
-    input, select, textarea{padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);font-size:15px}
-    textarea{min-height:74px;resize:vertical}
-    .actions{display:flex;gap:8px}
-    .btn{flex:1;padding:12px;border-radius:10px;border:0;font-weight:800;color:#021026;cursor:pointer}
-    .btn-primary{background:linear-gradient(90deg,var(--accent-a),var(--accent-b))}
-    .btn-ghost{background:transparent;border:1px solid rgba(6,32,44,0.06);color:var(--muted)}
-    .muted{color:var(--muted);font-size:13px}
-    .requests-list { margin-top:14px; display:flex; flex-direction:column; gap:10px }
-    .req { padding:10px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid rgba(6,32,44,0.04); display:flex; justify-content:space-between; align-items:flex-start; gap:12px }
-    .req .left { min-width:0 }
-    .req .title { font-weight:800; font-size:14px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden }
-    .req .meta { font-size:12px; color:var(--muted) }
-    .small-link { font-size:13px; color:var(--accent-a); text-decoration:none; cursor:pointer; }
-    .copy-btn { font-size:13px; padding:6px 8px; border-radius:8px; border:1px solid rgba(6,32,44,0.06); background:transparent; cursor:pointer; }
+    html,body{height:100%; margin:0; padding:0; background:linear-gradient(180deg,var(--bg-1),var(--bg-2)); font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-font-smoothing:antialiased; color:#06202b}
+    body{ padding:18px; -webkit-text-size-adjust:100% }
+
+    .wrap{ max-width:var(--maxw); margin:0 auto; }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px; border-radius:12px; background:rgba(255,255,255,0.95);
+      border:1px solid rgba(7,32,44,0.06); box-shadow:0 10px 30px rgba(7,30,60,0.04);
+      position:sticky; top:12px; z-index:30;
+    }
+    .brand { display:flex; gap:10px; align-items:center; }
+    .logo { width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; font-family:Manrope }
+    .title { font-family:Manrope; font-weight:800; font-size:16px; margin:0 }
+
+    main{ margin-top:12px; display:grid; gap:12px; }
+
+    .card { background:var(--card); border-radius:14px; padding:14px; border:1px solid rgba(7,32,44,0.04); box-shadow:0 20px 50px rgba(7,30,60,0.04); }
+    .meta { color:var(--muted); font-size:13px; margin-bottom:6px }
+    .pay-amount { font-family:Manrope; font-size:30px; font-weight:800; margin:4px 0; color:#021026 }
+    .desc { color:var(--muted); margin-top:6px; font-size:14px }
+
+    .row { display:flex; gap:8px; align-items:center; margin-top:12px; }
+    .btn { flex:1; padding:12px 14px; border-radius:12px; border:0; font-weight:800; cursor:pointer; }
+    .btn-primary { background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; box-shadow:0 12px 30px rgba(7,30,60,0.06); }
+    .btn-ghost { background:transparent; border:1px solid rgba(7,32,44,0.06); color:var(--muted); font-weight:700 }
+
+    .small { color:var(--muted); font-size:13px }
+    .notice { border-radius:10px; padding:10px; background:linear-gradient(180deg,#fbfdff,#ffffff); border:1px solid rgba(7,32,44,0.03); color:var(--muted); font-size:13px }
+
+    .spinner { display:inline-block; width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,0.6); border-right-color:rgba(0,0,0,0.12); animation:spin .9s linear infinite; vertical-align:middle; margin-left:8px }
+    @keyframes spin { to { transform: rotate(360deg) } }
+
+    .success { color: #0a7a3c; font-weight:800 }
+    .error { color:#b42318; font-weight:800 }
+
+    .footer { margin-top:18px; text-align:center; color:var(--muted); font-size:13px }
+
+    @media (max-width:380px){
+      .pay-amount { font-size:24px }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Request Payment</h1>
+  <div class="wrap" role="document">
+    <header role="banner" aria-label="Top navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">C</div>
+        <div>
+          <p class="title">CashCall</p>
+          <p class="small" id="payeeLabel" style="margin:0"></p>
+        </div>
+      </div>
+
       <div style="display:flex;gap:8px">
-        <a href="dashboard.html" class="small-link">Dashboard</a>
+        <a class="small" href="dashboard.html">Dashboard</a>
       </div>
     </header>
 
-    <section class="card" aria-labelledby="create-request">
-      <h2 id="create-request" style="margin:0 0 10px 0;font-family:Manrope">Create a request</h2>
+    <main>
+      <section class="card" aria-labelledby="payHeading">
+        <h2 id="payHeading" style="margin:0 0 6px 0; font-family:Manrope; font-size:18px">Confirm payment</h2>
+        <div id="statusMsg" class="notice" role="status" aria-live="polite">Loading request…</div>
 
-      <form id="requestForm" autocomplete="on">
-        <div class="form-row">
-          <label for="payee">Payee (phone or email)</label>
-          <input id="payee" name="payee" type="text" inputmode="tel" placeholder="+2348012345678 or name@example.com" required>
-          <div class="muted">Enter a phone number (with country code) or an email address.</div>
+        <div id="requestBlock" style="display:none">
+          <div class="meta">Request from <span id="requestorName" class="small"></span></div>
+          <div id="amount" class="pay-amount">—</div>
+          <div id="desc" class="desc">—</div>
+
+          <div class="row" style="margin-top:16px">
+            <button id="payBtn" class="btn btn-primary" aria-live="polite">Pay with card</button>
+            <button id="copyLink" class="btn btn-ghost">Copy link</button>
+          </div>
+
+          <div style="margin-top:12px" id="afterActions" aria-hidden="true">
+            <div id="resultMsg" class="small" role="status" aria-live="polite"></div>
+          </div>
         </div>
 
-        <div class="form-row">
-          <label for="amount">Amount</label>
-          <input id="amount" name="amount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="1000.00" required>
-        </div>
+      </section>
 
-        <div class="form-row">
-          <label for="currency">Currency</label>
-          <select id="currency" name="currency" required>
-            <option value="NGN">NGN — Naira</option>
-            <option value="ZAR">ZAR — Rand</option>
-            <option value="GHS">GHS — Cedi</option>
-            <option value="USD">USD — US Dollar</option>
-          </select>
-        </div>
+      <section class="card" aria-label="Help & info">
+        <p class="small" style="margin:0 0 8px 0"><strong>Card payments only:</strong> This merchant accepts card payments. You will be redirected to a secure Paystack flow to enter card details.</p>
+        <p class="small" style="margin:0">If you prefer, copy the payment link and open it in the app or share it with someone who will pay on your behalf.</p>
+      </section>
 
-        <div class="form-row">
-          <label for="description">Description (optional)</label>
-          <textarea id="description" name="description" placeholder="What is this request for?"></textarea>
-        </div>
-
-        <div class="form-row">
-          <label>Payment method for payee</label>
-          <div class="muted">Payee will be allowed to pay by <strong>card only</strong> on the pay page.</div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button type="submit" class="btn btn-primary">Create & Send</button>
-          <button type="button" id="saveBtn" class="btn btn-ghost">Save Draft</button>
-        </div>
-      </form>
-    </section>
-
-    <section style="margin-top:14px">
-      <h3 style="margin:0 0 8px 0;font-family:Manrope">Requests</h3>
-      <div id="requests" class="requests-list" aria-live="polite"></div>
-      <div id="noRequests" class="muted" style="display:none">No requests yet.</div>
-    </section>
+      <div class="footer">
+        <div id="footerMeta">Secure payment powered by your provider</div>
+      </div>
+    </main>
   </div>
 
+  <!-- Paystack inline script (client uses public key only). The server is required to create the transaction. -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
   <script>
-    /* request.html
-       - creates a request object and stores it in localStorage (cashcall_requests)
-       - builds a pay link to pay.html?request_id=UUID
-       - attempts to send via navigator.share or sms:/mailto:, and shows copy link fallback
-       - pay.html (separate) will read request by id and run Paystack card-only flow
-    */
+    /**
+     * pay.html (frontend)
+     *
+     * Responsibilities:
+     * - Read request_id from URL (pay.html?request_id=...)
+     * - Fetch request details (prefer server: GET /api/requests/:id). Fallback: localStorage cashcall_requests.
+     * - Show request details to payee.
+     * - On "Pay with card":
+     *     -> call POST /api/payments/initiate { requestId }
+     *     -> server initializes Paystack transaction (secret key) and returns either:
+     *         { authorization_url } (redirect flow) OR { reference, publicKey, amount, email? }
+     *     -> if authorization_url: redirect user to that URL
+     *     -> if inline: call PaystackPop.setup({ key: publicKey, email, amount, ref: reference, callback, onClose })
+     *     -> when callback returns, call GET /api/payments/verify/:reference (server verifies with secret key)
+     *     -> display success/failure, update local UI and optionally mark request as paid through server endpoint.
+     *
+     * IMPORTANT:
+     * - Never put Paystack secret key here.
+     * - Do server-side verification (verify endpoint) and webhook processing on your backend.
+     */
 
-    // Storage key for requests
+    // Storage & endpoints config
     const REQUESTS_KEY = 'cashcall_requests';
-
-    // Utilities
-    function uid(prefix = 'r') {
-      return prefix + '_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
-    }
-    function readRequests() {
-      try { return JSON.parse(localStorage.getItem(REQUESTS_KEY) || '[]'); } catch (e) { return []; }
-    }
-    function saveRequests(list) { localStorage.setItem(REQUESTS_KEY, JSON.stringify(list)); }
+    const INITIATE_ENDPOINT = '/api/payments/initiate'; // POST { requestId }
+    const VERIFY_ENDPOINT = '/api/payments/verify';     // POST { reference } or GET /api/payments/verify/:reference
+    const GET_REQUEST_ENDPOINT = (id) => `/api/requests/${encodeURIComponent(id)}`; // optional server route
 
     // DOM
-    const form = document.getElementById('requestForm');
-    const requestsEl = document.getElementById('requests');
-    const noRequests = document.getElementById('noRequests');
-    const saveBtn = document.getElementById('saveBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const requestBlock = document.getElementById('requestBlock');
+    const requestorNameEl = document.getElementById('requestorName');
+    const amountEl = document.getElementById('amount');
+    const descEl = document.getElementById('desc');
+    const payBtn = document.getElementById('payBtn');
+    const copyLink = document.getElementById('copyLink');
+    const afterActions = document.getElementById('afterActions');
+    const resultMsg = document.getElementById('resultMsg');
+    const payeeLabel = document.getElementById('payeeLabel');
 
-    // Build pay link for a request id
-    function makePayLink(requestId) {
-      // Use absolute URL so share/sms/email recipients get a full link
-      return `${location.origin}${location.pathname.replace(/\/[^/]*$/, '/') }pay.html?request_id=${encodeURIComponent(requestId)}`;
-      // If pay.html is at root, you could also use: `${location.origin}/pay.html?request_id=...`
+    // small helpers
+    function qs(name) {
+      return new URLSearchParams(location.search).get(name);
     }
-
-    // Render list
-    function renderRequests() {
-      const items = readRequests();
-      requestsEl.innerHTML = '';
-      if (!items.length) {
-        noRequests.style.display = 'block';
-        return;
-      } else noRequests.style.display = 'none';
-
-      items.slice().reverse().forEach(req => {
-        const el = document.createElement('div');
-        el.className = 'req';
-        el.innerHTML = `
-          <div class="left">
-            <div class="title">${escapeHtml(req.description || 'Payment request')}</div>
-            <div class="meta">${escapeHtml(req.payee)} • ${req.currency} ${Number(req.amount).toFixed(2)} • ${new Date(req.createdAt).toLocaleString()}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-            <button class="copy-btn" data-id="${req.id}">Copy link</button>
-            <a class="small-link" href="${makePayLink(req.id)}" target="_blank" rel="noopener">Open pay page</a>
-          </div>
-        `;
-        requestsEl.appendChild(el);
-      });
-
-      // attach copy handlers
-      document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', (ev) => {
-          const id = ev.currentTarget.dataset.id;
-          const link = makePayLink(id);
-          navigator.clipboard?.writeText(link).then(() => {
-            alert('Link copied to clipboard');
-          }).catch(() => {
-            prompt('Copy this link', link);
-          });
-        });
-      });
+    function showStatus(text, type = 'info') {
+      statusMsg.textContent = text;
+      if (type === 'error') statusMsg.style.borderColor = 'rgba(180,35,24,0.08)';
     }
-
-    function escapeHtml(s) {
-      if (!s) return '';
-      return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    // Validate payee: simple check for email or international phone (basic)
-    function isEmail(s) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
-    }
-    function isPhone(s) {
-      // very permissive international phone check: starts with + and digits, or digits with length
-      return /^\+?[0-9 \-]{7,20}$/.test(s);
-    }
-
-    // Create request and optionally send link
-    async function createAndSend(data, { sendImmediately = true } = {}) {
-      // Build request object
-      const id = uid('req');
-      const req = {
-        id,
-        payee: data.payee,
-        amount: Number(data.amount).toFixed(2),
-        currency: data.currency,
-        description: data.description || '',
-        method: 'card-only', // enforced on pay page
-        createdAt: new Date().toISOString(),
-        status: 'pending' // pending|paid|cancelled
-      };
-
-      // Save locally
-      const list = readRequests();
-      list.push(req);
-      saveRequests(list);
-      renderRequests();
-
-      const link = makePayLink(req.id);
-
-      if (!sendImmediately) {
-        showToast('Saved as draft — request not sent.');
-        return req;
-      }
-
-      // Try navigator.share (native share sheet)
-      const title = `Payment request ${req.currency} ${req.amount}`;
-      const text = `${req.description || 'Payment request'} — ${req.currency} ${req.amount}. Pay here: ${link}`;
-
-      if (navigator.share) {
-        try {
-          await navigator.share({ title, text, url: link });
-          showToast('Shared via native share sheet');
-          return req;
-        } catch (err) {
-          // user cancelled or error — continue to fallbacks
-          console.warn('share failed', err);
-        }
-      }
-
-      // Fallbacks:
-      // - If payee looks like phone: try sms:
-      // - If payee looks like email: try mailto:
-      if (isPhone(req.payee)) {
-        // sms:body format differs between platforms; we include text in body
-        const smsBody = encodeURIComponent(`${title}\n${text}`);
-        // use a universal sms: link — some clients prefer sms:+123?body=...
-        const smsUrl = `sms:${req.payee.replace(/\s+/g,'')}${navigator.userAgent.match(/iPhone|iPad|iPod/) ? '&' : '?'}body=${smsBody}`;
-        window.location.href = smsUrl;
-        // If SMS cannot be opened (e.g. desktop) user will see nothing — show fallback
-        setTimeout(() => {
-          // if desktop, prompt to copy
-          showCopyPrompt(link);
-        }, 800);
-        return req;
-      } else if (isEmail(req.payee)) {
-        const subject = encodeURIComponent(title);
-        const body = encodeURIComponent(text);
-        const mailto = `mailto:${req.payee}?subject=${subject}&body=${body}`;
-        window.location.href = mailto;
-        setTimeout(() => showCopyPrompt(link), 800);
-        return req;
-      } else {
-        // neither phone nor email — show copy fallback
-        showCopyPrompt(link);
-        return req;
-      }
-    }
-
-    function showCopyPrompt(link) {
+    function formatCurrency(amount, currency) {
       try {
-        navigator.clipboard.writeText(link).then(() => {
-          alert('Payment link copied to clipboard. Paste it into SMS or email to the payee.');
-        }).catch(() => {
-          prompt('Copy this payment link and send to payee', link);
-        });
-      } catch (err) {
-        prompt('Copy this payment link and send to payee', link);
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(Number(amount));
+      } catch (e) {
+        return (currency ? currency + ' ' : '') + Number(amount).toFixed(2);
       }
     }
 
-    function showToast(msg, t = 2000) {
-      // simple toast
-      const el = document.createElement('div');
-      el.textContent = msg;
-      el.style.position = 'fixed';
-      el.style.left = '50%';
-      el.style.transform = 'translateX(-50%)';
-      el.style.bottom = '18px';
-      el.style.padding = '10px 14px';
-      el.style.background = '#021026';
-      el.style.color = '#eafaff';
-      el.style.borderRadius = '10px';
-      el.style.zIndex = 9999;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), t);
+    // load request — prefer server, fallback to localStorage
+    async function loadRequest(requestId) {
+      if (!requestId) return null;
+
+      // Attempt server fetch first (more authoritative)
+      try {
+        const resp = await fetch(GET_REQUEST_ENDPOINT(requestId), { method: 'GET', credentials: 'include' });
+        if (resp.ok) {
+          const json = await resp.json();
+          if (json && json.id) return json;
+        }
+        // Non-OK falls through to local fallback
+      } catch (err) {
+        // network or CORS; fallback to local
+        console.warn('Server request fetch failed, falling back to localStorage', err);
+      }
+
+      // fallback: read from localStorage
+      try {
+        const arr = JSON.parse(localStorage.getItem(REQUESTS_KEY) || '[]');
+        return arr.find(r => r.id === requestId) || null;
+      } catch (err) {
+        return null;
+      }
     }
 
-    // Hook up form
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const payee = document.getElementById('payee').value.trim();
-      const amount = document.getElementById('amount').value;
-      const currency = document.getElementById('currency').value;
-      const description = document.getElementById('description').value.trim();
-
-      if (!payee || !amount || Number(amount) <= 0) {
-        alert('Please provide a valid payee and amount.');
+    // initialize UI
+    (async function init() {
+      const requestId = qs('request_id');
+      if (!requestId) {
+        showStatus('Invalid payment link. No request id found.', 'error');
         return;
       }
-      if (!isEmail(payee) && !isPhone(payee)) {
-        if (!confirm('Payee does not look like a phone number or email. Send link anyway?')) {
+
+      showStatus('Fetching request…');
+
+      const req = await loadRequest(requestId);
+      if (!req) {
+        showStatus('Request not found or expired. Please ask the requester to resend the link.', 'error');
+        return;
+      }
+
+      // populate UI
+      requestBlock.style.display = 'block';
+      requestorNameEl.textContent = req.requestorName || (req.requestor || 'Requester');
+      amountEl.textContent = formatCurrency(req.amount, req.currency || 'USD');
+      descEl.textContent = req.description || 'Payment request';
+      payeeLabel.textContent = req.payee || '';
+      showStatus('Ready to pay — secure checkout', 'info');
+
+      // if already paid, show status and disable
+      if (req.status === 'paid') {
+        resultMsg.innerHTML = `<span class="success">This request has already been paid.</span>`;
+        afterActions.setAttribute('aria-hidden', 'false');
+        payBtn.disabled = true;
+        copyLink.disabled = false;
+      }
+
+      // wire buttons
+      payBtn.addEventListener('click', () => handlePayClick(req));
+      copyLink.addEventListener('click', () => {
+        const link = location.href;
+        navigator.clipboard?.writeText(link).then(() => alert('Link copied'), () => prompt('Copy this link', link));
+      });
+    })();
+
+    // handle pay button click
+    async function handlePayClick(req) {
+      payBtn.disabled = true;
+      payBtn.innerHTML = 'Preparing… <span class="spinner" aria-hidden="true"></span>';
+      resultMsg.textContent = '';
+
+      try {
+        // Initiate payment with backend
+        // Payload: { requestId } — server will init Paystack transaction using secret key
+        const resp = await fetch(INITIATE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: req.id })
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => null);
+          throw new Error(text || `Failed to initiate payment (${resp.status})`);
+        }
+
+        const init = await resp.json();
+        // Expected responses:
+        // 1) { authorization_url } -> redirect flow
+        // 2) { reference, publicKey, amount, email? } -> inline flow
+        // 3) { authorization_url, reference, publicKey } -> either
+
+        // If server provided authorization_url — redirect user
+        if (init.authorization_url) {
+          // optional: record reference locally if provided
+          showStatus('Redirecting to secure payment page…');
+          window.location.href = init.authorization_url;
           return;
         }
-      }
 
-      // create and send
-      const btn = e.submitter || e.target.querySelector('button[type=submit]');
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
+        // Inline flow path
+        if (!window.PaystackPop) {
+          throw new Error('Paystack inline script not available.');
+        }
 
-      try {
-        await createAndSend({ payee, amount, currency, description }, { sendImmediately: true });
+        // Validate returned fields
+        const publicKey = init.publicKey || init.public_key || init.pk;
+        const reference = init.reference || init.ref || init.access_code;
+        const amountFromServer = init.amount || Math.round(Number(req.amount) * 100); // server should return smallest unit
+        const email = init.email || req.payee || 'customer@example.com';
+
+        if (!publicKey || !reference) {
+          throw new Error('Server did not return required paystack init data (publicKey/reference).');
+        }
+
+        // Open Paystack inline
+        showStatus('Opening secure card entry…');
+        const handler = PaystackPop.setup({
+          key: publicKey,
+          email: email,
+          amount: amountFromServer, // in smallest currency unit (kobo/cents)
+          ref: reference,
+          metadata: {
+            requestId: req.id
+          },
+          callback: async function(response) {
+            // response.reference — verify on server
+            showStatus('Payment completed — verifying…');
+            payBtn.innerHTML = 'Verifying… <span class="spinner" aria-hidden="true"></span>';
+            try {
+              // Call verify endpoint (server-side should verify with secret key)
+              const verifyResp = await fetch(`${VERIFY_ENDPOINT}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference: response.reference })
+              });
+              if (!verifyResp.ok) {
+                const txt = await verifyResp.text().catch(()=>null);
+                throw new Error(txt || 'Verification failed');
+              }
+              const verifyJson = await verifyResp.json();
+              // Server should return verification result: success/failed & transaction data
+              if (verifyJson && (verifyJson.status === 'success' || verifyJson.data?.status === 'success')) {
+                // mark local request paid (if stored locally) and show success
+                markRequestPaid(req.id, response.reference);
+                resultMsg.innerHTML = `<span class="success">Payment successful — reference ${escapeHtml(response.reference)}</span>`;
+                afterActions.setAttribute('aria-hidden', 'false');
+                showStatus('Payment confirmed. Redirecting to dashboard…');
+                setTimeout(() => window.location.href = 'dashboard.html', 1200);
+              } else {
+                throw new Error('Payment not successful (server verification).');
+              }
+            } catch (errVer) {
+              console.error('verify error', errVer);
+              resultMsg.innerHTML = `<span class="error">Payment verification failed — ${escapeHtml(errVer.message || errVer)}</span>`;
+              afterActions.setAttribute('aria-hidden', 'false');
+            } finally {
+              payBtn.disabled = false;
+              payBtn.textContent = 'Pay with card';
+            }
+          },
+          onClose: function() {
+            payBtn.disabled = false;
+            payBtn.textContent = 'Pay with card';
+            showStatus('Payment cancelled — you can try again or copy the link.');
+          }
+        });
+        handler.openIframe();
+
       } catch (err) {
-        console.error(err);
-        alert('Unable to create request. Try again.');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Create & Send';
+        console.error('initiate error', err);
+        resultMsg.innerHTML = `<span class="error">Error: ${escapeHtml(err.message || err)}</span>`;
+        afterActions.setAttribute('aria-hidden', 'false');
+        payBtn.disabled = false;
+        payBtn.textContent = 'Pay with card';
+        showStatus('Unable to start payment. Try again or contact support.', 'error');
       }
-    });
+    }
 
-    // Save draft handler
-    saveBtn.addEventListener('click', async () => {
-      const payee = document.getElementById('payee').value.trim();
-      const amount = document.getElementById('amount').value;
-      const currency = document.getElementById('currency').value;
-      const description = document.getElementById('description').value.trim();
-
-      if (!payee || !amount || Number(amount) <= 0) {
-        alert('Please provide a valid payee and amount to save a draft.');
-        return;
+    // mark request paid locally (best-effort). Permanent truth should come from server/webhook.
+    function markRequestPaid(requestId, reference) {
+      try {
+        const arr = JSON.parse(localStorage.getItem(REQUESTS_KEY) || '[]');
+        const idx = arr.findIndex(r => r.id === requestId);
+        if (idx !== -1) {
+          arr[idx].status = 'paid';
+          arr[idx].paidAt = new Date().toISOString();
+          arr[idx].paymentReference = reference;
+          localStorage.setItem(REQUESTS_KEY, JSON.stringify(arr));
+        }
+      } catch (err) {
+        console.warn('local mark paid failed', err);
       }
+    }
 
-      await createAndSend({ payee, amount, currency, description }, { sendImmediately: false });
-    });
-
-    // init
-    renderRequests();
+    // small XSS-safe escape
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
   </script>
 </body>
 </html>
