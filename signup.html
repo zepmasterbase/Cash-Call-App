@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* lighter theme */
+      /* light mobile-first theme */
       --bg-1: #eaf6ff;
       --bg-2: #f7fbff;
       --muted:#4b6272;
@@ -47,12 +47,12 @@
     .icon-btn{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; border:0; background:transparent; color:var(--muted); cursor:pointer; }
     .primary-btn{ padding:8px 12px; border-radius:10px; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; border:0; }
 
-    /* page content */
+    /* content */
     main{ display:flex; flex-direction:column; gap:12px; }
     .hero-title{ font-family:Manrope; font-size:22px; margin:4px 0 0; color:#06202b; }
     .lead{ color:var(--muted); font-size:14px; margin:0; }
 
-    /* form card */
+    /* card + form */
     .card{ margin-top:6px; border-radius:12px; padding:14px; background: rgba(255,255,255,0.85); border:1px solid rgba(6,32,44,0.04); box-shadow: 0 14px 40px rgba(4,18,30,0.04); }
     .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
     label{ font-size:13px; color:#274048; font-weight:600; }
@@ -81,7 +81,7 @@
     <header role="banner" aria-label="Top navigation">
       <div class="brand">
         <div class="logo-wrap" aria-hidden="true">
-          <!-- inline neon C SVG (light theme uses same gradient) -->
+          <!-- small neon C compact SVG -->
           <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CashCall logo">
             <defs>
               <linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#8450ff"/></linearGradient>
@@ -93,20 +93,9 @@
       </div>
 
       <div class="hdr-actions">
-        <button id="countryBtn" class="icon-btn" aria-expanded="false" aria-controls="countryPanel" aria-label="Choose country">🌍</button>
         <button class="primary-btn" onclick="location.href='login.html'">Log in</button>
       </div>
     </header>
-
-    <!-- collapsible country panel (kept for quick country change) -->
-    <div id="countryPanel" style="display:none; margin-bottom:8px; gap:8px;">
-      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Region</label>
-      <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);width:100%;background:transparent;color:#06202b;font-weight:700;">
-        <option value="za" data-default-currency="ZAR">South Africa</option>
-        <option value="gh" data-default-currency="GHS">Ghana</option>
-        <option value="ng" data-default-currency="NGN">Nigeria</option>
-      </select>
-    </div>
 
     <main>
       <div>
@@ -118,64 +107,70 @@
         <form id="signupForm" autocomplete="on" novalidate>
           <div class="form-row">
             <label for="fullName">Full name</label>
-            <input id="fullName" name="name" type="text" placeholder="Your name" required>
-            <div class="hint" id="nameHint">Use the name you want to appear on receipts.</div>
+            <input id="fullName" name="name" type="text" placeholder="Your name" required aria-describedby="nameHint">
+            <div id="nameHint" class="hint">Use the name you want to appear on receipts.</div>
           </div>
 
           <div class="form-row">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="you@example.com" required>
-            <div class="hint" id="emailHint">We'll send a verification link.</div>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required aria-describedby="emailHint">
+            <div id="emailHint" class="hint">We'll send a verification link.</div>
           </div>
 
           <div class="form-row">
             <label for="phone">Phone number</label>
-            <input id="phone" name="phone" type="text" placeholder="+27 82 123 4567" inputmode="tel" required>
-            <div class="hint">Use the phone number you'll receive payment links on.</div>
+            <input id="phone" name="phone" type="text" placeholder="+234 80 0000 0000" inputmode="tel" required aria-describedby="phoneHint">
+            <div id="phoneHint" class="hint">Use the phone number you'll receive payment links on.</div>
           </div>
 
           <div class="form-row">
             <label for="country">Country</label>
-            <select id="country" name="country" required>
+            <select id="country" name="country" required aria-describedby="countryHint">
+              <option value="ng" data-default-currency="NGN">Nigeria</option>
               <option value="za" data-default-currency="ZAR">South Africa</option>
               <option value="gh" data-default-currency="GHS">Ghana</option>
-              <option value="ng" data-default-currency="NGN">Nigeria</option>
             </select>
+            <div id="countryHint" class="hint">Choose the country where you primarily operate.</div>
           </div>
 
           <div class="form-row">
             <label for="currency">Currency (wallet)</label>
-            <select id="currency" name="currency" required>
+            <select id="currency" name="currency" required aria-describedby="currencyHint">
               <option value="NGN">Naira (NGN)</option>
               <option value="ZAR">Rand (ZAR)</option>
               <option value="GHS">Cedi (GHS)</option>
               <option value="USD">US Dollar (USD)</option>
             </select>
-            <div class="hint">Default currency is picked from your country but you can change it.</div>
+            <div id="currencyHint" class="hint">Default currency is chosen from your country but you can change it.</div>
           </div>
 
           <div class="form-row pw-toggle">
             <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Create a password" minlength="8" required>
+            <input id="password" name="password" type="password" placeholder="Create a password (min 8 chars)" minlength="8" required aria-describedby="pwHint">
             <button type="button" id="togglePw" aria-label="Show password">👁️</button>
-            <div class="hint">At least 8 characters. Use letters and numbers.</div>
+            <div id="pwHint" class="hint">At least 8 characters. Use letters and numbers.</div>
           </div>
 
           <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:6px;">
-            <input id="tos" type="checkbox" required>
+            <input id="remember" type="checkbox" checked aria-label="Remember on this device">
+            <label for="remember" style="font-size:13px;color:var(--muted);">Remember this device (stay signed in)</label>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input id="tos" name="tos" type="checkbox" required>
             <label for="tos" style="font-size:13px;color:var(--muted);">I agree to the <a href="#" style="color:var(--accent-a);text-decoration:none;">Terms</a> & <a href="#" style="color:var(--accent-a);">Privacy</a></label>
           </div>
 
           <div class="submit-row">
-            <button type="submit" class="submit">Create account</button>
+            <button type="submit" class="submit" id="submitBtn">Create account</button>
             <button type="button" class="alt" onclick="location.href='login.html'">Have an account?</button>
           </div>
 
           <div class="divider">or sign up with</div>
 
           <div style="display:flex;gap:10px;margin-top:6px;">
-            <button type="button" class="social" style="flex:1" onclick="alert('Continue with Google (demo)')">Google</button>
-            <button type="button" class="social" style="flex:1" onclick="alert('Continue with Apple (demo)')">Apple</button>
+            <button type="button" class="primary-btn" style="flex:1;background:transparent;border:1px solid rgba(6,32,44,0.04);color:var(--muted)" onclick="alert('Continue with Google (demo)')">Google</button>
+            <button type="button" class="primary-btn" style="flex:1;background:transparent;border:1px solid rgba(6,32,44,0.04);color:var(--muted)" onclick="alert('Continue with Apple (demo)')">Apple</button>
           </div>
         </form>
       </section>
@@ -185,109 +180,182 @@
   </div>
 
   <script>
-    // small helper to create a demo token
+    /*****************************************************************
+     * Demo signup flow:
+     * - Validates inputs client-side
+     * - Builds a demo token, user object and wallet object
+     * - Persists session either to localStorage (remember=true) or sessionStorage
+     * - Redirects to dashboard.html which should read the stored session
+     *
+     * PRODUCTION: replace the demoSignup() function with a server call:
+     *   fetch('/api/signup', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)})
+     *   Then persist server response (secure token & server user/wallet).
+     *****************************************************************/
+
+    // keys used in storage
+    const TOKEN_KEY = 'cashcall_token';
+    const USER_KEY = 'cashcall_user';
+    const WALLET_KEY = 'cashcall_wallet';
+    const EXPIRY_KEY = 'cashcall_token_expiry_ms'; // optional
+
+    // simple token generator (demo only)
     function makeToken() {
       return 'tok_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
     }
 
-    // map default currency by country
+    // demo signup: fake server call (replace with real API)
+    async function demoSignup(payload) {
+      // simulate network latency
+      await new Promise(r => setTimeout(r, 450));
+
+      // basic fake "server" validations (demo)
+      if (!payload.email || !payload.password) throw new Error('Missing required fields');
+
+      // create demo user & wallet returned by server
+      const user = {
+        id: 'user_' + Math.random().toString(36).slice(2),
+        name: payload.name,
+        email: payload.email.toLowerCase(),
+        phone: payload.phone,
+        country: payload.country
+      };
+
+      const wallet = {
+        userId: user.id,
+        currency: payload.currency,
+        balance: 0.00,
+        createdAt: new Date().toISOString()
+      };
+
+      const token = makeToken();
+
+      // server would probably return token + user + wallet
+      return { token, user, wallet };
+    }
+
+    // helpers for session persistence
+    function clearOtherStorage(remember) {
+      if (remember) {
+        // clear sessionStorage to avoid ambiguity
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        sessionStorage.removeItem(WALLET_KEY);
+        sessionStorage.removeItem(EXPIRY_KEY);
+      } else {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(WALLET_KEY);
+        localStorage.removeItem(EXPIRY_KEY);
+      }
+    }
+
+    function persistSession({ token, user, wallet, remember }) {
+      const target = remember ? localStorage : sessionStorage;
+      const other = remember ? sessionStorage : localStorage;
+      // clear other storage
+      other.removeItem(TOKEN_KEY);
+      other.removeItem(USER_KEY);
+      other.removeItem(WALLET_KEY);
+      other.removeItem(EXPIRY_KEY);
+
+      target.setItem(TOKEN_KEY, token);
+      target.setItem(USER_KEY, JSON.stringify(user));
+      target.setItem(WALLET_KEY, JSON.stringify(wallet));
+
+      // optional expiry for non-remember sessions (demo)
+      if (!remember) {
+        const expiry = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+        target.setItem(EXPIRY_KEY, String(expiry));
+      } else {
+        target.removeItem(EXPIRY_KEY);
+      }
+    }
+
+    // currency defaults map
     const countryToCurrency = { ng: 'NGN', za: 'ZAR', gh: 'GHS' };
 
-    // elements
-    const countrySelectInline = document.getElementById('countrySelect'); // header panel select
-    const countryBtn = document.getElementById('countryBtn');
-    const countryPanel = document.getElementById('countryPanel');
-
-    const country = document.getElementById('country');      // main form country select
-    const currency = document.getElementById('currency');
-    const pw = document.getElementById('password');
-    const toggle = document.getElementById('togglePw');
+    // DOM elements
     const form = document.getElementById('signupForm');
+    const countryEl = document.getElementById('country');
+    const currencyEl = document.getElementById('currency');
+    const headerCountrySelect = null; // no header inline in this page; keep form select authoritative
+    const pwEl = document.getElementById('password');
+    const togglePw = document.getElementById('togglePw');
 
-    // toggle header country panel
-    countryBtn.addEventListener('click', () => {
-      const open = countryPanel.style.display !== 'block';
-      countryPanel.style.display = open ? 'block' : 'none';
-      countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) countrySelectInline.focus();
+    // when country changes, set default currency if user hasn't manually changed it
+    let currencyUserChanged = false;
+    countryEl.addEventListener('change', (e) => {
+      const c = e.target.value;
+      const def = countryToCurrency[c] || 'USD';
+      if (!currencyUserChanged) currencyEl.value = def;
     });
 
-    // when header inline country changes, propagate to main form and update currency default
-    countrySelectInline.addEventListener('change', (e) => {
-      const v = e.target.value;
-      country.value = v;
-      // set currency default for country
-      const def = countryToCurrency[v] || 'USD';
-      currency.value = def;
-    });
-
-    // when main country select changes, update header inline select & prefered currency
-    country.addEventListener('change', (e) => {
-      const v = e.target.value;
-      if (countrySelectInline) countrySelectInline.value = v;
-      const def = countryToCurrency[v] || 'USD';
-      // only change currency if user hasn't manually changed it - we detect by checking a flag
-      if (!currency.dataset.userChanged) currency.value = def;
-    });
-
-    // detect manual currency change
-    currency.addEventListener('change', () => currency.dataset.userChanged = '1');
+    currencyEl.addEventListener('change', () => currencyUserChanged = true);
 
     // password show/hide
-    toggle.addEventListener('click', () => {
-      const isPwd = pw.type === 'password';
-      pw.type = isPwd ? 'text' : 'password';
-      toggle.textContent = isPwd ? '🙈' : '👁️';
-      toggle.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+    togglePw.addEventListener('click', () => {
+      const isPwd = pwEl.type === 'password';
+      pwEl.type = isPwd ? 'text' : 'password';
+      togglePw.textContent = isPwd ? '🙈' : '👁️';
+      togglePw.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
     });
 
-    // demo signup: client-side "auth", store user + wallet in localStorage, redirect to dashboard.html
-    form.addEventListener('submit', (e) => {
+    // form submit: call demoSignup, persist and redirect
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
 
-      const data = {
-        name: form.name.value.trim(),
-        email: form.email.value.trim().toLowerCase(),
-        phone: form.phone.value.trim(),
-        country: form.country.value,
-        currency: form.currency.value,
-        createdAt: new Date().toISOString(),
-      };
+      // gather form data
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const phone = document.getElementById('phone').value.trim();
+      const country = countryEl.value;
+      const currency = currencyEl.value;
+      const password = pwEl.value;
+      const remember = document.getElementById('remember').checked;
+      const tos = document.getElementById('tos').checked;
 
-      // very small demo "auth" check — in real app, call your server here
-      // create token and store user
-      const token = makeToken();
-      const user = { ...data, id: 'user_' + Math.random().toString(36).slice(2) };
+      if (!tos) {
+        alert('Please accept the Terms & Privacy to continue.');
+        return;
+      }
 
-      // set up initial wallet: demo balance 0.00 in chosen currency
-      const wallet = {
-        userId: user.id,
-        currency: data.currency,
-        balance: 0.00,
-        updatedAt: new Date().toISOString()
-      };
+      // construct payload for server
+      const payload = { name, email, phone, country, currency, password };
 
-      // persist (demo) to localStorage
-      localStorage.setItem('cashcall_token', token);
-      localStorage.setItem('cashcall_user', JSON.stringify(user));
-      localStorage.setItem('cashcall_wallet', JSON.stringify(wallet));
+      // disable UI while processing
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
 
-      // Redirect to dashboard (client-side)
-      // dashboard.html should read localStorage keys above to show wallet currency & balance
-      window.location.href = 'dashboard.html';
+      try {
+        // === Replace demoSignup with real API call in production ===
+        // Example:
+        // const resp = await fetch('/api/signup', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) });
+        // const result = await resp.json(); // expect { token, user, wallet }
+        const result = await demoSignup(payload);
+
+        // persist session
+        persistSession({ token: result.token, user: result.user, wallet: result.wallet, remember });
+
+        // redirect to dashboard (dashboard should read session from storage)
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        console.error('signup error', err);
+        alert(err.message || 'Unable to create account — please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+      }
     });
 
-    // populate initial defaults: pick country from header select if present
+    // initialize defaults: set currency based on selected country on page load
     (function initDefaults(){
-      // set form country from header inline select if present
-      if (countrySelectInline && country) country.value = countrySelectInline.value || country.value;
-      // set currency default based on country
-      const def = countryToCurrency[country.value] || 'USD';
-      currency.value = def;
+      const def = countryToCurrency[countryEl.value] || 'USD';
+      currencyEl.value = def;
     })();
   </script>
 </body>
