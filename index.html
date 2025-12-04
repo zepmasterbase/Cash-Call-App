@@ -2,154 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CashCall — Request Money with Ease</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CashCall — Request Money</title>
   <meta name="description" content="CashCall — request payments quickly and securely in South Africa, Ghana & Nigeria." />
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
 
   <style>
+    /* Mobile-first, single-column — no horizontal scroll */
     :root{
-      --bg-1: #071428;          /* deep navy */
-      --bg-2: #071a2a;
-      --card: rgba(255,255,255,0.03);
-      --muted: #9fb3c6;
-      --glass: rgba(255,255,255,0.06);
-      --accent-a: #00d4ff;     /* cyan */
-      --accent-b: #7b39ff;     /* violet */
-      --accent-grad: linear-gradient(90deg,var(--accent-a),var(--accent-b));
-      --glass-border: rgba(255,255,255,0.08);
-      --glass-shadow: 0 8px 40px rgba(4,12,20,0.55);
-      --radius: 14px;
+      --bg-1:#071428; --bg-2:#071a2a;
+      --accent-a:#00d4ff; --accent-b:#7b39ff;
+      --muted:#9fb3c6; --glass:rgba(255,255,255,0.03);
+      --radius:14px;
     }
 
+    /* reset & safety */
     *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden; -webkit-text-size-adjust:100%;}
     body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
-                  radial-gradient(1000px 450px at 90% 90%, rgba(6,182,212,0.06), transparent 10%),
-                  linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);
-      color:#e6f6ff;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:#e8f9ff;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      line-height:1.45;
-      -webkit-tap-highlight-color: transparent;
-      padding:28px;
+      line-height:1.4;
+      padding:18px 16px;
     }
 
-    /* layout container */
-    .wrap{ max-width:1200px; margin:0 auto; }
+    /* container (constrained width for phones) */
+    .wrap{ max-width:420px; margin:0 auto; }
 
-    /* GLASS GLOW HEADER - sticky and fits full width */
-    header{
-      position:sticky; top:20px; z-index:40;
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      padding:12px 18px; border-radius:20px;
-      backdrop-filter: blur(10px) saturate(120%);
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-      box-shadow: var(--glass-shadow), 0 0 40px rgba(124,58,237,0.08);
-      border:1px solid var(--glass-border);
-      margin-bottom:28px;
-      transition: transform 320ms cubic-bezier(.2,.9,.3,1), box-shadow 320ms;
-    }
-    header:focus-within{ transform: translateY(-2px); box-shadow: 0 18px 60px rgba(123,57,255,0.12); }
-
-    /* brand */
-    .brand{ display:flex; gap:14px; align-items:center }
-
-    /* Neon 3D 'C' logo built with inline SVG and CSS layers */
-    .logo-wrap{ width:64px; height:64px; display:grid; place-items:center; position:relative; }
-    .logo-bg{
-      position:absolute; inset:0; border-radius:14px; filter: blur(14px) saturate(120%);
-      background: radial-gradient(60% 60% at 30% 30%, rgba(0,212,255,0.10), transparent 30%),
-                  radial-gradient(40% 40% at 80% 70%, rgba(123,57,255,0.09), transparent 30%);
-      pointer-events:none;
-    }
-    .logo-svg{ width:56px; height:56px; display:block; border-radius:12px; }
-
-    /* subtle logo 3d depth using pseudo-shadow */
-    .logo-shadow{ position:absolute; left:6px; top:6px; width:56px; height:56px; border-radius:12px; filter: blur(18px) opacity(.14); background: linear-gradient(90deg, rgba(123,57,255,0.9), rgba(0,212,255,0.9)); z-index:0 }
-
-    h1{ margin:0; font-family:Manrope, Inter; font-weight:800; letter-spacing:0.4px; font-size:18px; color:transparent; -webkit-background-clip:text; background-image:var(--accent-grad); }
-
-    nav.actions{ display:flex; gap:12px; align-items:center }
-
-    .country-select{
-      padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04);
-      background: rgba(255,255,255,0.02); color:var(--muted); font-weight:600; backdrop-filter: blur(6px);
+    /* CLEAN, GLASS-STYLE HEADER (single row, no cluster) */
+    header {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:10px 12px; border-radius:14px;
+      backdrop-filter: blur(8px) saturate(120%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 8px 30px rgba(4,12,20,0.45);
+      position:sticky; top:12px; z-index:40;
     }
 
-    .btn{ padding:10px 16px; border-radius:12px; border:0; font-weight:700; cursor:pointer; font-size:14px }
-    .btn-ghost{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); }
-    .btn-primary{ background:var(--accent-grad); color:#021026; box-shadow: 0 10px 30px rgba(7,40,61,0.12); }
+    /* brand area: small logo + wordmark */
+    .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
+    .logo-wrap{ width:44px; height:44px; position:relative; display:grid; place-items:center; flex:0 0 44px; }
+    .logo-svg{ width:40px; height:40px; display:block; }
+    .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; color:transparent; -webkit-background-clip:text;
+      background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-    /* HERO */
-    .hero{ display:grid; grid-template-columns: 1fr 420px; gap:28px; align-items:start; }
-    @media (max-width:980px){ .hero{ grid-template-columns:1fr } }
+    /* right-side actions simplified: only two icons (country + auth) — no cluster */
+    .hdr-actions { display:flex; gap:8px; align-items:center; }
+    .icon-btn {
+      width:40px; height:40px; border-radius:10px; display:grid; place-items:center; border:0;
+      background: rgba(255,255,255,0.02); color:var(--muted); font-weight:700; cursor:pointer;
+    }
+    .primary-btn {
+      padding:8px 12px; border-radius:10px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:800; border:0;
+      font-size:14px;
+    }
 
-    .hero-left{ padding:14px 6px }
-    .meta-row{ display:flex; gap:12px; align-items:center; margin-bottom:16px; }
-    .meta-pill{ display:inline-flex; gap:8px; align-items:center; padding:8px 12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:999px; border:1px solid rgba(255,255,255,0.03); color:var(--muted); font-weight:600 }
+    /* collapsible country panel (keeps header uncluttered) */
+    .panel { margin-top:10px; display:none; gap:8px; flex-direction:column; }
+    .panel.open { display:flex; }
 
-    .hero-left h2{ margin:6px 0 12px; font-family:Manrope; font-size:44px; line-height:1.02; color:#f6fbff; letter-spacing:-0.6px }
-    .hero-left p{ margin:0 0 18px; color:var(--muted); max-width:68ch; font-size:16px }
+    /* HERO - single col, fits screen */
+    .hero { margin-top:14px; display:flex; flex-direction:column; gap:14px; align-items:stretch; }
+    .meta-pill{ align-self:flex-start; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.02); color:var(--muted); font-weight:600; font-size:13px; border:1px solid rgba(255,255,255,0.03); }
+    h2{ margin:0; font-family:Manrope; font-size:28px; line-height:1.06; color:#f6fbff; letter-spacing:-0.4px; }
+    p.lead{ margin:6px 0 0; color:var(--muted); font-size:14px; }
 
-    .cta-row{ display:flex; gap:12px; flex-wrap:wrap }
+    /* CTA row — single-row buttons that fit width */
+    .cta-row{ display:flex; gap:10px; margin-top:12px; }
+    .cta-row .primary-btn{ flex:1 }
+    .cta-row .ghost { flex:1; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); font-weight:700; border-radius:10px; padding:8px 12px; }
 
-    /* HERO CARD - refined phone mock */
-    .hero-card{ border-radius:18px; padding:18px; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 30px 80px rgba(2,6,12,0.6); }
+    /* hero card / phone preview - responsive */
+    .hero-card{ margin-top:6px; border-radius:14px; padding:14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 20px 50px rgba(2,6,12,0.6); }
+    .phone { width:100%; border-radius:12px; padding:12px; background:rgba(255,255,255,0.01); display:flex; flex-direction:column; gap:10px; }
+    .balance { font-size:22px; font-weight:800; color:#eaffff; font-family:Manrope; }
+    .phone-row { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+    .small { color:var(--muted); font-size:12px }
 
-    .phone{ max-width:340px; margin:0 auto; border-radius:16px; overflow:hidden; background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); border:1px solid rgba(255,255,255,0.03); padding:18px }
-    .balance{ font-size:32px; font-weight:800; color:#f6fbff; font-family:Manrope }
-    .small{ color:var(--muted); font-size:13px; margin-top:6px }
+    /* features — stacked, full width */
+    .features{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+    .feature{ display:flex; gap:10px; align-items:center; padding:12px; border-radius:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); }
+    .ico{ width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; font-size:20px; }
 
-    .phone .actions{ margin-top:14px; display:flex; gap:10px }
-    .phone button{ flex:1; padding:12px 14px; border-radius:12px; font-weight:800; border:0; cursor:pointer }
-    .phone .send{ background:transparent; border:1px solid rgba(255,255,255,0.04); color:#dff6ff }
-    .phone .request{ background:var(--accent-grad); color:#021026 }
+    /* footer simplified */
+    footer{ margin-top:18px; color:var(--muted); font-size:13px; display:flex; justify-content:space-between; gap:8px; align-items:center; flex-wrap:wrap; }
 
-    /* features */
-    .features{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; margin-top:22px }
-    @media (max-width:720px){ .features{ grid-template-columns:1fr } }
-    .feature{ padding:14px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent); border:1px solid rgba(255,255,255,0.03); display:flex; gap:12px; align-items:center }
-    .feature .ico{ width:52px; height:52px; border-radius:12px; display:grid; place-items:center; background: linear-gradient(135deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; box-shadow: 0 8px 26px rgba(123,57,255,0.12) }
-    .feature strong{ display:block; color:#eafaff }
-    .feature p{ margin:0; color:var(--muted); font-size:13px }
+    /* micro interactions: subtle transforms (touch-friendly) */
+    button:active{ transform: translateY(1px); }
+    .icon-btn:hover, .primary-btn:hover{ filter:brightness(1.06) }
 
-    /* footer */
-    footer{ margin-top:36px; padding-top:18px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; color:var(--muted); border-top:1px dashed rgba(255,255,255,0.02) }
-
-    /* interactive micro-animations */
-    .btn, .feature, .phone button{ transition: transform 200ms cubic-bezier(.2,.9,.3,1), box-shadow 200ms; }
-    .btn:hover{ transform: translateY(-3px); }
-    .feature:hover{ transform: translateY(-6px); box-shadow: 0 18px 50px rgba(2,6,12,0.6) }
-
-    /* neon stroke animation for logo's inner glow (prefers-reduced-motion respected) */
-    @keyframes neonPulse{ 0%{ filter: drop-shadow(0 0 6px rgba(0,212,255,0.8)) drop-shadow(0 0 10px rgba(123,57,255,0.6)); transform: translateY(0) } 50%{ filter: drop-shadow(0 0 10px rgba(0,212,255,0.95)) drop-shadow(0 0 18px rgba(123,57,255,0.9)); transform: translateY(-1px) } 100%{ filter: drop-shadow(0 0 6px rgba(0,212,255,0.8)) drop-shadow(0 0 10px rgba(123,57,255,0.6)); transform: translateY(0) } }
-    @media (prefers-reduced-motion: no-preference){ .logo-svg{ animation: neonPulse 2.8s ease-in-out infinite; } }
-
-    /* small responsive tweaks */
-    @media (max-width:520px){ header{ padding:10px; border-radius:12px } .logo-wrap{ width:54px; height:54px } .hero-left h2{ font-size:32px } }
-
-    /* utilities */
-    .muted{ color:var(--muted) }
-
+    /* accessibility / small screens */
+    @media (max-width:380px){
+      body{padding:14px 10px}
+      h2{ font-size:24px }
+      .title{ font-size:15px }
+    }
   </style>
 </head>
 <body>
   <div class="wrap" role="document">
 
-    <!-- Header -->
+    <!-- HEADER: clean, single-row -->
     <header role="banner" aria-label="Top navigation">
-      <div class="brand">
-        <div class="logo-wrap" aria-hidden="false">
-          <div class="logo-bg" aria-hidden="true"></div>
-          <div class="logo-shadow" aria-hidden="true"></div>
-
-          <!-- Inline SVG Neon 3D C -->
+      <div class="brand" aria-hidden="false">
+        <div class="logo-wrap" aria-hidden="true">
+          <!-- compact neon 3D C (SVG scales responsively) -->
           <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CashCall logo">
             <defs>
               <linearGradient id="g1" x1="0" x2="1">
@@ -157,131 +118,119 @@
                 <stop offset="100%" stop-color="#7b39ff" />
               </linearGradient>
               <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="b" />
+                <feGaussianBlur stdDeviation="2.8" result="b" />
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
             </defs>
-
-            <!-- 3D-ish base -->
             <g transform="translate(10,10)">
-              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.18" transform="translate(4,6) scale(0.96)"/>
-
-              <!-- main neon stroke -->
-              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"/>
-
-              <!-- inner highlight -->
-              <path d="M50 20 C35 20 22 32 22 46 C22 60 35 72 50 72 C65 72 78 60 78 46 C78 38 74 30 69 24" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.18" transform="translate(3,4) scale(0.95)"/>
+              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"/>
             </g>
           </svg>
-
         </div>
 
-        <h1>CashCall</h1>
+        <div class="title" aria-label="CashCall">CashCall</div>
       </div>
 
-      <nav class="actions" role="navigation" aria-label="Primary actions">
-        <select class="country-select" aria-label="Primary country">
-          <option value="za">South Africa</option>
-          <option value="gh">Ghana</option>
-          <option value="ng">Nigeria</option>
-          <option value="uk">United Kingdom</option>
-          <option value="us">United States</option>
-        </select>
+      <div class="hdr-actions">
+        <!-- country selector tucked into a compact button (clean header) -->
+        <button id="countryBtn" class="icon-btn" aria-expanded="false" aria-controls="countryPanel" aria-label="Choose country">🌍</button>
 
-        <button class="btn btn-ghost" onclick="location.href='login.html'">Log in</button>
-        <button class="btn btn-primary" onclick="location.href='signup.html'">Sign up</button>
-      </nav>
+        <!-- simple auth CTA (primary) -->
+        <button class="primary-btn" onclick="location.href='signup.html'">Sign up</button>
+      </div>
     </header>
 
-    <!-- Hero -->
+    <!-- collapsible panel under header (opens on tap) -->
+    <div id="countryPanel" class="panel" aria-hidden="true">
+      <label style="font-size:13px;color:var(--muted);">Region</label>
+      <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6f6ff;font-weight:700;">
+        <option value="za">South Africa</option>
+        <option value="gh">Ghana</option>
+        <option value="ng">Nigeria</option>
+        <option value="uk">United Kingdom</option>
+        <option value="us">United States</option>
+      </select>
+      <div style="display:flex;gap:8px;">
+        <button class="ghost" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);" onclick="document.getElementById('countryPanel').classList.remove('open');document.getElementById('countryBtn').focus();">Done</button>
+        <button class="primary-btn" style="flex:1;" onclick="alert('Saved (demo)');document.getElementById('countryPanel').classList.remove('open');">Save</button>
+      </div>
+    </div>
+
+    <!-- HERO -->
     <main class="hero" role="main">
-      <section class="hero-left" aria-label="Intro">
-        <div class="meta-row">
-          <div class="meta-pill" aria-hidden="true">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="filter:drop-shadow(0 6px 14px rgba(0,212,255,0.08))">
-              <circle cx="12" cy="12" r="10" fill="url(#dot)"/>
-            </svg>
-            Built for students, merchants & everyday payments
-          </div>
-        </div>
+      <div class="meta-pill" aria-hidden="true">Built for students, merchants & everyday payments</div>
 
-        <h2>Request payments in seconds — local rails, global reach.</h2>
-        <p>CashCall makes it frictionless to request and collect payments across South Africa, Ghana & Nigeria. Send secure payment links via SMS, WhatsApp or QR — support for cards, instant EFT and major local gateways.</p>
+      <h2>Request payments in seconds — local rails, global reach.</h2>
+      <p class="lead">Send secure payment links via SMS, WhatsApp or QR. Support for cards, instant EFT and major local gateways across South Africa, Ghana & Nigeria.</p>
 
-        <div class="cta-row" aria-hidden="false">
-          <button class="btn btn-ghost" onclick="location.href='login.html'">Log in</button>
-          <button class="btn btn-primary" onclick="location.href='signup.html'">Sign up</button>
-        </div>
+      <div class="cta-row" aria-hidden="false">
+        <button class="ghost" onclick="location.href='login.html'">Log in</button>
+        <button class="primary-btn" onclick="location.href='signup.html'">Sign up</button>
+      </div>
 
-        <div class="features" aria-hidden="false">
-          <div class="feature">
-            <div class="ico">🔗</div>
-            <div>
-              <strong>One-tap links</strong>
-              <p>Instant payment links that work across devices and popular messaging apps.</p>
-            </div>
-          </div>
-
-          <div class="feature">
-            <div class="ico">🧾</div>
-            <div>
-              <strong>Split & Remind</strong>
-              <p>Group splits, scheduled reminders and polite nudges — automated for you.</p>
-            </div>
-          </div>
-
-          <div class="feature">
-            <div class="ico">🔒</div>
-            <div>
-              <strong>Secure rails</strong>
-              <p>PCI-ready flows, local payment rails and strong fraud monitoring.
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      <aside class="hero-card" aria-hidden="true">
+      <div class="hero-card" aria-hidden="false">
         <div class="phone" role="img" aria-label="CashCall phone preview">
-          <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
+          <div class="phone-row">
             <div>
-              <div style="font-size:12px; color:var(--muted)">Available balance</div>
+              <div class="small">Available balance</div>
               <div class="balance">R 1,240.00</div>
               <div class="small">Card • Instant EFT • Mobile Wallets</div>
             </div>
+
             <div style="text-align:right;">
               <div class="small">Today</div>
-              <div style="font-weight:800; margin-top:6px; color:var(--accent-a)">+ R 280.00</div>
+              <div style="font-weight:800;margin-top:6px;color:var(--accent-a)">+ R 280.00</div>
             </div>
           </div>
 
-          <hr style="margin:14px 0; border:none; border-top:1px solid rgba(255,255,255,0.04)">
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:8px 0">
 
-          <div style="display:flex; gap:10px; align-items:center; justify-content:space-between;">
+          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;">
             <div style="flex:1">
-              <div style="font-size:12px; color:var(--muted)">Recent</div>
-              <div style="margin-top:8px; font-size:14px; color:#eafaff">• Payment received • R 180.00</div>
-              <div style="font-size:13px; color:var(--muted)">2:34 PM</div>
+              <div class="small">Recent</div>
+              <div style="margin-top:6px;font-size:14px;color:#eafaff">• Payment received • R 180.00</div>
+              <div style="font-size:12px;color:var(--muted)">2:34 PM</div>
             </div>
 
-            <div style="width:120px;">
-              <div class="actions" style="display:flex; gap:8px;">
-                <button class="send" onclick="alert('Send action (demo)')">Send</button>
-                <button class="request" onclick="location.href='signup.html'">Request</button>
-              </div>
+            <div style="display:flex;gap:8px;flex-direction:column;">
+              <button style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafaff;font-weight:700;" onclick="alert('Send (demo)')">Send</button>
+              <button style="padding:8px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));color:#021026;font-weight:800;" onclick="location.href='signup.html'">Request</button>
             </div>
           </div>
         </div>
-      </aside>
+      </div>
+
+      <div class="features" aria-hidden="false">
+        <div class="feature">
+          <div class="ico">🔗</div>
+          <div>
+            <strong style="display:block;color:#eafaff">One-tap links</strong>
+            <div style="color:var(--muted);font-size:13px">Instant payment links that work across devices and apps.</div>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="ico">🧾</div>
+          <div>
+            <strong style="display:block;color:#eafaff">Split & Remind</strong>
+            <div style="color:var(--muted);font-size:13px">Group splits, scheduled reminders and polite nudges.</div>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="ico">🔒</div>
+          <div>
+            <strong style="display:block;color:#eafaff">Secure rails</strong>
+            <div style="color:var(--muted);font-size:13px">PCI-ready flows and local payment gateway support.</div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <footer role="contentinfo">
-      <div>© <span id="year"></span> CashCall — Trusted local payments</div>
-      <div style="display:flex; gap:12px; align-items:center;">
-        <a class="muted" href="#" aria-label="Twitter">Twitter</a>
-        <a class="muted" href="#" aria-label="Instagram">Instagram</a>
-      </div>
+      <div>© <span id="year"></span> CashCall</div>
+      <div style="color:var(--muted)">Twitter • Instagram</div>
     </footer>
   </div>
 
@@ -289,11 +238,22 @@
     // dynamic year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // small accessibility: keyboard for country select (example)
-    const countrySelect = document.querySelector('.country-select');
-    countrySelect && countrySelect.addEventListener('change', (e) => {
-      console.log('Selected country:', e.target.value);
+    // country panel toggle (keeps header minimal)
+    const countryBtn = document.getElementById('countryBtn');
+    const countryPanel = document.getElementById('countryPanel');
+    countryBtn.addEventListener('click', () => {
+      const open = countryPanel.classList.toggle('open');
+      countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      countryPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) {
+        // focus first control for accessibility
+        const sel = document.getElementById('countrySelect');
+        setTimeout(()=> sel && sel.focus(), 120);
+      } else countryBtn.focus();
     });
+
+    // prevent accidental sideways scroll if content ever grows
+    window.addEventListener('resize', () => { document.documentElement.style.overflowX = 'hidden'; });
   </script>
 </body>
 </html>
