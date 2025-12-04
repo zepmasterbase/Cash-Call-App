@@ -4,275 +4,329 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CashCall — Request Money with Ease</title>
-  <meta name="description" content="CashCall — quick, secure way to request money from friends, family or customers in South Africa." />
+  <meta name="description" content="CashCall — request payments quickly and securely in South Africa, Ghana & Nigeria." />
 
-  <!-- Optional: Google fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
 
   <style>
-    /* Reset + base */
-    *,*::before,*::after{box-sizing:border-box}
+    :root{
+      --bg-1: #0f1724;
+      --accent-a: #06b6d4;
+      --accent-b: #7c3aed;
+      --glass: rgba(255,255,255,0.06);
+      --muted: #6b8598;
+    }
+
+    *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color:#0b1220;
-      background: radial-gradient(1200px 600px at 10% 10%, #f5fbff 0%, #eef6ff 8%, #f7f9fc 16%, #ffffff 100%);
+      background: linear-gradient(180deg,#f6fbff 0%, #f3f8ff 40%, #ffffff 100%);
+      color: #07203a;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       line-height:1.45;
+      -webkit-tap-highlight-color: transparent;
     }
-    a{color:inherit; text-decoration:none}
-    img{max-width:100%; height:auto; display:block}
 
-    /* Layout */
-    .container{
+    /* container */
+    .wrap{
       max-width:1120px;
       margin:0 auto;
-      padding:28px 20px;
+      padding:20px;
     }
 
-    /* Header glass placeholder */
-    header{
+    /* header (simple placeholder) */
+    header {
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
-      padding:14px;
-      border-radius:14px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.6));
-      box-shadow: 0 6px 30px rgba(6,22,47,0.06);
-      border: 1px solid rgba(15,23,42,0.06);
-      backdrop-filter: blur(8px);
-      margin:12px 0 28px;
+      gap:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75));
+      padding:12px 16px;
+      border-radius:12px;
+      box-shadow: 0 8px 30px rgba(14,30,60,0.06);
+      border: 1px solid rgba(7,40,61,0.04);
+      margin-top:14px;
+      margin-bottom:24px;
+      backdrop-filter: blur(6px);
     }
 
+    /* brand */
     .brand {
-      display:flex; align-items:center; gap:12px;
+      display:flex;
+      gap:12px;
+      align-items:center;
     }
-    .logo {
-      width:46px; height:46px; border-radius:10px;
-      background: linear-gradient(135deg,#0ea5ff,#7c3aed);
-      display:inline-grid; place-items:center; color:white; font-weight:800;
-      font-family:Manrope, system-ui; font-size:18px;
-      box-shadow: 0 6px 20px rgba(14,165,255,0.12);
+    .brand .logo {
+      width:52px;
+      height:52px;
+      border-radius:10px;
+      background: linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      display:grid;
+      place-items:center;
+      box-shadow: 0 8px 28px rgba(124,58,237,0.12);
+      overflow:hidden;
     }
-    .brand h1 { margin:0; font-size:16px; font-weight:700; color:#07203a; letter-spacing:0.2px; }
+    .brand .logo img{ width:40px; height:40px; object-fit:contain; display:block; }
+    .brand h1 {
+      margin:0;
+      font-family:Manrope, Inter, sans-serif;
+      font-weight:700;
+      font-size:16px;
+      color:#07203a;
+      letter-spacing:0.2px;
+    }
 
     /* header actions */
-    .actions { display:flex; gap:12px; align-items:center; }
+    .actions { display:flex; gap:10px; align-items:center; }
     .btn {
-      padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer; border:0;
+      padding:9px 14px;
+      border-radius:10px;
+      border:0;
+      font-weight:600;
+      cursor:pointer;
     }
-    .btn-login {
-      background:transparent; color:#0b1220; padding:8px 12px; border-radius:8px;
-      border:1px solid rgba(11,18,32,0.06);
+    .btn-ghost {
+      background:transparent;
+      border:1px solid rgba(7,40,61,0.06);
+      color:#05233a;
     }
-    .btn-signup {
-      background: linear-gradient(90deg,#0ea5ff,#7c3aed);
-      color:white; box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+    .btn-primary {
+      background: linear-gradient(90deg,var(--accent-a),var(--accent-b));
+      color:white;
+      box-shadow: 0 10px 30px rgba(7,40,61,0.06);
     }
 
-    /* Hero */
+    /* hero */
     .hero {
       display:grid;
       grid-template-columns: 1fr 420px;
       gap:28px;
       align-items:center;
-      margin-bottom:30px;
+      margin-bottom:28px;
     }
-    @media (max-width:920px){
-      .hero { grid-template-columns: 1fr; padding-bottom:10px; }
-      .hero-card { order: -1; }
+    @media (max-width:960px){
+      .hero { grid-template-columns: 1fr; }
     }
 
-    .hero-left h2{
-      font-family:Manrope, system-ui; font-size:40px; margin:0 0 12px; color:#05233a;
-      line-height:1.02;
+    .hero-left h2 {
+      margin:0 0 12px;
+      font-family:Manrope, Inter;
+      font-size:40px;
+      line-height:1.03;
+      color:#031728;
     }
-    .hero-left p{
-      margin:0 0 18px; color:#355069;
+    .hero-left p {
+      margin:0 0 18px;
+      color:var(--muted);
       max-width:62ch;
     }
-    .cta-row { display:flex; gap:12px; flex-wrap:wrap; }
 
-    /* Secondary CTA style */
-    .btn-ghost {
-      padding:10px 14px; border-radius:10px; border:1px solid rgba(6,22,47,0.06);
-      background:transparent; color:#073046; font-weight:600;
+    /* small country selector (simple) */
+    .meta-row { display:flex; gap:12px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+    .country-select{
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid rgba(7,40,61,0.04);
+      background:transparent;
+      color:#05233a;
+      font-weight:600;
     }
 
-    /* Illustration card */
+    /* CTA row */
+    .cta-row { display:flex; gap:12px; flex-wrap:wrap; }
+
+    /* hero card (phone mock) */
     .hero-card {
       border-radius:14px;
       padding:18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdff);
-      border:1px solid rgba(7,40,61,0.04);
-      box-shadow: 0 12px 40px rgba(6,22,47,0.06);
-    }
-
-    .phone-mock {
-      width:100%; max-width:320px; margin:0 auto; border-radius:18px;
-      overflow:hidden; background:linear-gradient(180deg,#f7fbff,#ffffff);
-      padding:18px;
-      border:1px solid rgba(10,30,60,0.03);
-    }
-
-    .balance {
-      font-weight:700; font-size:2rem; color:#05233a; font-family:Manrope;
-    }
-    .token-line { color:#376081; font-size:0.95rem; margin-top:6px; }
-
-    /* Features grid */
-    .features {
-      display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:20px;
-    }
-    @media (max-width:720px){ .features { grid-template-columns:repeat(1,1fr);} }
-    .feature {
       background: linear-gradient(180deg,#ffffff,#fbfdff);
-      border-radius:12px; padding:12px; display:flex; gap:12px; align-items:center;
       border:1px solid rgba(7,40,61,0.04);
+      box-shadow: 0 20px 60px rgba(7,40,61,0.06);
     }
-    .feature .icon {
-      width:44px; height:44px; border-radius:10px; display:grid; place-items:center;
-      color:white; font-weight:700;
-      background:linear-gradient(135deg,#06b6d4,#7c3aed);
+    .phone {
+      max-width:320px;
+      margin:0 auto;
+      border-radius:18px;
+      overflow:hidden;
+      background: linear-gradient(180deg,#f7fbff,#ffffff);
+      border:1px solid rgba(10,30,60,0.03);
+      padding:14px;
+    }
+    .balance { font-size:28px; font-weight:700; color:#05233a; font-family:Manrope; }
+    .small { color:var(--muted); font-size:13px; margin-top:6px; }
+
+    .phone .actions { margin-top:12px; display:flex; gap:8px; }
+    .phone button { flex:1; padding:10px; border-radius:10px; font-weight:700; border:0; cursor:pointer; }
+    .phone .send { background:#eef8ff; color:#03314b; border:1px solid rgba(13,90,140,0.06); }
+    .phone .request { background: linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#fff; }
+
+    /* features */
+    .features {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+    @media (max-width:720px){ .features { grid-template-columns: 1fr; } }
+    .feature {
+      padding:12px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#ffffff,#fbfdff);
+      border:1px solid rgba(7,40,61,0.04);
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .feature .ico {
+      width:46px; height:46px; border-radius:10px; display:grid; place-items:center;
+      background: linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      color:white; font-weight:800;
       box-shadow: 0 8px 20px rgba(124,58,237,0.12);
     }
-    .feature strong{ display:block; font-size:14px; color:#05233a; }
-    .feature .desc { color:#4b6b84; font-size:13px; }
+    .feature strong{ display:block; color:#05233a;}
+    .feature p { margin:0; color:var(--muted); font-size:13px }
 
-    /* Footer simple */
+    /* footer */
     footer {
-      margin-top:36px; padding:20px 0; border-top:1px solid rgba(6,22,47,0.03);
-      color:#476979; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      margin-top:32px;
+      padding-top:22px;
+      border-top:1px solid rgba(7,40,61,0.03);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      color:var(--muted);
     }
 
-    /* Mobile nav button */
-    .mobile-toggle { display:none; background:transparent; border:0; padding:8px; border-radius:8px; }
-    @media (max-width:520px) {
-      .actions .btn-login { display:none; }
-      .mobile-toggle { display:inline-flex; }
-      header { padding:12px; }
+    /* small responsive tweaks */
+    @media (max-width:520px){
+      header { padding:10px; margin:10px 0 18px; }
+      .brand h1{ font-size:15px; }
+      .brand .logo{ width:46px; height:46px; }
     }
 
-    /* small niceties */
-    .muted { color:#6b8598; font-size:14px; }
-
+    /* subtle utility */
+    .muted { color:var(--muted); }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap" role="document">
     <!-- Header -->
-    <header role="banner" aria-label="Main header">
-      <div class="brand" aria-hidden="false">
-        <div class="logo">CC</div>
+    <header role="banner" aria-label="Top navigation">
+      <div class="brand">
+        <!-- Put your logo file named "logo.png" next to this index.html, or change src to your logo path -->
+        <div class="logo" aria-hidden="true">
+          <img src="logo.png" alt="CashCall logo">
+        </div>
         <h1>CashCall</h1>
       </div>
 
-      <nav class="actions" aria-label="Main actions">
-        <button class="btn btn-login" onclick="location.href='login.html'">Log in</button>
-        <button class="btn btn-signup" onclick="location.href='signup.html'">Sign up</button>
-        <button class="mobile-toggle" id="mobileToggle" aria-label="Open menu" title="Menu">☰</button>
+      <nav class="actions" role="navigation" aria-label="Primary actions">
+        <select class="country-select" aria-label="Primary country">
+          <option value="za">South Africa</option>
+          <option value="gh">Ghana</option>
+          <option value="ng">Nigeria</option>
+          <option value="uk">United Kingdom</option>
+          <option value="us">United States</option>
+        </select>
+
+        <button class="btn btn-ghost" onclick="location.href='login.html'">Log in</button>
+        <button class="btn btn-primary" onclick="location.href='signup.html'">Sign up</button>
       </nav>
     </header>
 
-    <!-- Mobile small menu (revealed on mobile toggle) -->
-    <div id="mobileMenu" style="display:none; margin-bottom:18px;">
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a href="login.html" class="btn btn-ghost" style="width:120px; text-align:center;">Log in</a>
-        <a href="signup.html" class="btn btn-signup" style="width:120px; text-align:center;">Sign up</a>
-      </div>
-    </div>
-
     <!-- Hero -->
     <main class="hero" role="main">
-      <section class="hero-left">
-        <h2>Request money in seconds — friendly, secure and local.</h2>
-        <p class="muted">
-          CashCall makes it easy to request payments from customers, classmates or friends. Send a short secure link by phone — the payer opens the link and completes payment quickly.
-        </p>
+      <section class="hero-left" aria-label="Intro">
+        <div class="meta-row">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); box-shadow:0 6px 18px rgba(124,58,237,0.12)"></div>
+            <div class="muted">Built for students, merchants & everyday payments</div>
+          </div>
+        </div>
 
-        <div class="cta-row" style="margin-top:6px;">
-          <a href="login.html" class="btn btn-ghost">Log in</a>
-          <a href="signup.html" class="btn btn-signup">Sign up</a>
+        <h2>Request payments in seconds — local rails, global reach.</h2>
+        <p>CashCall makes it simple to request money from classmates, customers or family. Create a secure payment link, send via SMS or WhatsApp and get paid through local payment rails (cards, instant EFT) — tailored for South Africa, Ghana & Nigeria.</p>
+
+        <div class="cta-row" aria-hidden="false">
+          <button class="btn btn-ghost" onclick="location.href='login.html'">Log in</button>
+          <button class="btn btn-primary" onclick="location.href='signup.html'">Sign up</button>
         </div>
 
         <div class="features" aria-hidden="false">
           <div class="feature">
-            <div class="icon">1</div>
+            <div class="ico">①</div>
             <div>
               <strong>Request by phone</strong>
-              <div class="desc">Send a secure payment link — no setup required for customers.</div>
+              <p>Send a secure payment link to any phone number — no merchant setup required.</p>
             </div>
           </div>
 
           <div class="feature">
-            <div class="icon">2</div>
+            <div class="ico">②</div>
             <div>
-              <strong>Split & remind</strong>
-              <div class="desc">Split bills and send automatic reminders until paid.</div>
+              <strong>Split & reminders</strong>
+              <p>Split bills quickly and automate polite payment reminders.</p>
             </div>
           </div>
 
           <div class="feature">
-            <div class="icon">3</div>
+            <div class="ico">③</div>
             <div>
-              <strong>Local payments</strong>
-              <div class="desc">Support for local wallets, instant EFT and card rail integrations.</div>
+              <strong>Local payment rails</strong>
+              <p>Support for cards, instant EFT and popular local gateways per country.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <aside class="hero-card hero-card-visual" aria-hidden="true">
-        <div class="phone-mock" role="img" aria-label="Phone preview of CashCall">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+      <aside class="hero-card" aria-hidden="true">
+        <div class="phone" role="img" aria-label="CashCall phone preview">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
             <div>
-              <div style="font-size:12px; color:#4b6b84;">Available balance</div>
+              <div style="font-size:12px; color:var(--muted)">Available balance</div>
               <div class="balance">R 1,240.00</div>
-              <div class="token-line">Zep Cash (ZAC) • Tether (USDT) • Ethereum (ETH)</div>
+              <div class="small">Zep Cash (ZAC) • Tether (USDT) • Ethereum (ETH)</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:11px; color:#7b95ab;">Today</div>
-              <div style="font-weight:700; color:#0b1220; margin-top:6px;">+ R 280.00</div>
+              <div class="small">Today</div>
+              <div style="font-weight:700; margin-top:6px; color:#05233a">+ R 280.00</div>
             </div>
           </div>
 
           <hr style="margin:14px 0; border:none; border-top:1px solid rgba(7,40,61,0.04)">
 
-          <div style="display:flex; gap:8px; justify-content:space-between;">
-            <button style="flex:1; padding:10px; border-radius:10px; background:#eef8ff; border:1px solid rgba(13,90,140,0.06); font-weight:700; color:#03314b; cursor:pointer;">Send</button>
-            <button style="flex:1; padding:10px; border-radius:10px; background:linear-gradient(90deg,#06b6d4,#7c3aed); color:#fff; border:none; font-weight:700; cursor:pointer;">Request</button>
+          <div class="actions" style="display:flex; gap:8px;">
+            <button class="send" onclick="alert('Send action (demo)')">Send</button>
+            <button class="request" onclick="location.href='signup.html'">Request</button>
           </div>
         </div>
       </aside>
     </main>
 
-    <footer>
-      <div class="muted">© <span id="year"></span> CashCall</div>
+    <footer role="contentinfo">
+      <div>© <span id="year"></span> CashCall — Trusted local payments</div>
       <div style="display:flex; gap:12px; align-items:center;">
-        <a href="#" class="muted" aria-label="Twitter">Twitter</a>
-        <a href="#" class="muted" aria-label="Instagram">Instagram</a>
+        <a class="muted" href="#" aria-label="Twitter">Twitter</a>
+        <a class="muted" href="#" aria-label="Instagram">Instagram</a>
       </div>
     </footer>
   </div>
 
   <script>
-    // mobile toggle
-    const mobileToggle = document.getElementById('mobileToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    mobileToggle && mobileToggle.addEventListener('click', () => {
-      if (mobileMenu.style.display === 'none') mobileMenu.style.display = 'block';
-      else mobileMenu.style.display = 'none';
-    });
-
     // dynamic year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Accessibility nicety: allow keyboard toggle
-    mobileToggle && mobileToggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') mobileToggle.click();
+    // small accessibility: keyboard for country select (example)
+    const countrySelect = document.querySelector('.country-select');
+    countrySelect && countrySelect.addEventListener('change', (e) => {
+      // placeholder: you can wire this to change currency/rails UI per country
+      console.log('Selected country:', e.target.value);
     });
   </script>
 </body>
