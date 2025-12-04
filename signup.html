@@ -2,223 +2,214 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sign Up — CashCall</title>
-  <meta name="description" content="Create a CashCall account" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CashCall — Sign up</title>
+  <meta name="description" content="Create a CashCall account — request payments quickly and securely." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
-    /* Shared, simplified styles matching index.html */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
+    :root{
+      /* lighter theme */
+      --bg-1: #eaf6ff;
+      --bg-2: #f7fbff;
+      --card-bg: rgba(4,18,30,0.04);
+      --muted:#4b6272;
+      --accent-a:#00bcd4;
+      --accent-b:#8450ff;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
     body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      color:#0f1724;
-      background:#ffffff;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:#06202b;
+      padding:18px 14px;
       -webkit-font-smoothing:antialiased;
-      line-height:1.4;
     }
-    a{color:inherit; text-decoration:none}
-    .container{max-width:900px; margin:0 auto; padding:20px}
-    header{display:flex; align-items:center; justify-content:space-between; padding:18px 0}
-    .brand{display:flex; align-items:center; gap:12px}
-    .logo{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#2563eb,#1e40af);border-radius:10px;color:white;font-weight:700;font-size:18px}
-    .brand h1{font-size:18px;margin:0}
-    .btn{display:inline-block;padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer;border:0}
-    .btn-primary{background:#2563eb;color:white;box-shadow:0 6px 18px rgba(37,99,235,0.12)}
-    .btn-ghost{background:transparent;color:#0f1724;padding:8px 12px}
-    main{display:grid; grid-template-columns:1fr; gap:20px; padding:18px 0 48px}
-    .card{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(8,30,63,0.06);border:1px solid rgba(10,30,60,0.03)}
-    h2{margin:0 0 12px; font-size:22px}
-    p.muted{color:#64748b; margin:0 0 18px}
-    form{display:grid; gap:12px}
-    label{font-size:13px; color:#0f1724; display:block; margin-bottom:6px}
-    input[type="text"], input[type="tel"], input[type="email"], input[type="password"], select {
-      width:100%;
-      padding:12px 14px;
-      border-radius:10px;
-      border:1px solid #e6eefc;
-      background:#fff;
-      font-size:15px;
-      outline:none;
-      transition:box-shadow .12s, border-color .12s;
+    .wrap{ max-width:420px; margin:0 auto; }
+
+    /* header */
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:10px 12px; border-radius:12px;
+      backdrop-filter: blur(6px) saturate(110%);
+      background: rgba(255,255,255,0.7);
+      border:1px solid rgba(6,32,44,0.06);
+      box-shadow: 0 6px 20px rgba(6,32,44,0.04);
+      position:sticky; top:12px; z-index:40;
+      margin-bottom:14px;
     }
-    input:focus{box-shadow:0 6px 18px rgba(37,99,235,0.08); border-color:#2b6cb0}
-    .row{display:flex; gap:10px}
-    .small{font-size:13px;color:#64748b}
-    .actions{display:flex; gap:10px; align-items:center; margin-top:6px}
-    .foot-note{font-size:13px; color:#64748b}
-    .error{color:#b91c1c; font-size:13px}
-    footer{margin-top:28px;padding:18px 0;border-top:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
-    .socials{display:flex; gap:10px}
-    .socials a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;background:#f8fafc;border:1px solid #e6eefc}
-    @media(min-width:880px){
-      main{grid-template-columns:540px 1fr; align-items:start}
-      h2{font-size:28px}
+    .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
+    .logo-wrap{ width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; }
+    .logo-svg{ width:40px; height:40px; display:block; }
+    .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:transparent; -webkit-background-clip:text; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .hdr-actions{ display:flex; gap:8px; align-items:center; }
+    .icon-btn{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; border:0; background:transparent; color:var(--muted); cursor:pointer; }
+    .primary-btn{ padding:8px 12px; border-radius:10px; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; border:0; }
+
+    /* page content */
+    main{ display:flex; flex-direction:column; gap:12px; }
+    .hero-title{ font-family:Manrope; font-size:22px; margin:4px 0 0; color:#06202b; }
+    .lead{ color:var(--muted); font-size:14px; margin:0; }
+
+    /* form card */
+    .card{ margin-top:6px; border-radius:12px; padding:14px; background: rgba(255,255,255,0.85); border:1px solid rgba(6,32,44,0.04); box-shadow: 0 14px 40px rgba(4,18,30,0.04); }
+    .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+    label{ font-size:13px; color:#274048; font-weight:600; }
+    input[type="text"], input[type="email"], input[type="password"], select{
+      padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; font-size:15px; color:#06202b;
     }
-    @media(max-width:520px){
-      .logo{width:40px;height:40px}
-      .container{padding:16px}
-    }
+    .hint{ font-size:12px; color:var(--muted); }
+
+    .pw-toggle{ position:relative; display:flex; align-items:center; }
+    .pw-toggle button{ position:absolute; right:8px; top:8px; border:0; background:transparent; padding:6px; cursor:pointer; color:var(--muted); }
+
+    .submit-row{ display:flex; gap:10px; margin-top:8px; }
+    .submit{ flex:1; padding:12px; border-radius:10px; border:0; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; cursor:pointer; }
+    .alt{ flex:1; padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; color:var(--muted); cursor:pointer; font-weight:700; }
+
+    .divider{ text-align:center; color:var(--muted); font-size:13px; margin:8px 0; }
+
+    .socials{ display:flex; gap:10px; }
+    .social{ flex:1; padding:10px; border-radius:10px; border:1px solid rgba(6,32,44,0.04); background:transparent; text-align:center; font-weight:700; color:var(--muted); }
+
+    footer{ margin-top:12px; color:var(--muted); text-align:center; font-size:13px; }
+
+    @media (max-width:380px){ .hero-title{ font-size:20px } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  <div class="wrap">
+    <!-- header -->
+    <header role="banner" aria-label="Top navigation">
       <div class="brand">
-        <a href="index.html" aria-label="CashCall home"><div class="logo" aria-hidden="true">CC</div></a>
-        <h1>CashCall</h1>
+        <div class="logo-wrap" aria-hidden="true">
+          <!-- inline neon C SVG (light theme uses same gradient) -->
+          <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CashCall logo">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#8450ff"/></linearGradient>
+            </defs>
+            <g transform="translate(10,10)"><path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.16"/><path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></g>
+          </svg>
+        </div>
+        <div class="title">CashCall</div>
       </div>
-      <nav>
-        <a class="btn btn-ghost" href="login.html">Log In</a>
-      </nav>
+
+      <div class="hdr-actions">
+        <button id="countryBtn" class="icon-btn" aria-expanded="false" aria-controls="countryPanel" aria-label="Choose country">🌍</button>
+        <button class="primary-btn" onclick="location.href='login.html'">Log in</button>
+      </div>
     </header>
 
+    <!-- collapsible country panel -->
+    <div id="countryPanel" style="display:none; margin-bottom:8px; gap:8px;">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Region</label>
+      <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);width:100%;background:transparent;color:#06202b;font-weight:700;">
+        <option value="za">South Africa</option>
+        <option value="gh">Ghana</option>
+        <option value="ng">Nigeria</option>
+        <option value="uk">United Kingdom</option>
+        <option value="us">United States</option>
+      </select>
+    </div>
+
     <main>
-      <section class="card" aria-labelledby="signup-heading">
-        <h2 id="signup-heading">Create your CashCall account</h2>
-        <p class="muted">Sign up with a phone number (we'll use it to send requests and secure your account). This page is a demo; when you add a backend replace the local mock with secure APIs.</p>
+      <div>
+        <div class="hero-title">Create your CashCall account</div>
+        <p class="lead">Sign up to send and receive payments quickly. No merchant setup required.</p>
+      </div>
 
-        <form id="signupForm" novalidate>
-          <div>
-            <label for="fullname">Full name</label>
-            <input id="fullname" name="fullname" type="text" placeholder="Your full name" required />
+      <section class="card" aria-labelledby="signup-form">
+        <form id="signupForm" autocomplete="on" novalidate>
+          <div class="form-row">
+            <label for="fullName">Full name</label>
+            <input id="fullName" name="name" type="text" placeholder="Your name" required>
+            <div class="hint" id="nameHint">Use the name you want to appear on receipts.</div>
           </div>
 
-          <div>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+            <div class="hint" id="emailHint">We'll send a verification link.</div>
+          </div>
+
+          <div class="form-row">
             <label for="phone">Phone number</label>
-            <input id="phone" name="phone" type="tel" placeholder="+27 82 123 4567" pattern="^\+?\d{8,15}$" required />
-            <div class="small muted">Include country code (e.g. +27).</div>
+            <input id="phone" name="phone" type="text" placeholder="+27 82 123 4567" inputmode="tel" required>
+            <div class="hint">Use the phone number you'll receive payment links on.</div>
           </div>
 
-          <div>
-            <label for="email">Email (optional)</label>
-            <input id="email" name="email" type="email" placeholder="you@example.com" />
+          <div class="form-row pw-toggle">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Create a password" minlength="8" required>
+            <button type="button" id="togglePw" aria-label="Show password">👁️</button>
+            <div class="hint">At least 8 characters. Use letters and numbers.</div>
           </div>
 
-          <div class="row" style="align-items:center">
-            <div style="flex:1">
-              <label for="password">Password</label>
-              <input id="password" name="password" type="password" placeholder="Create a password" minlength="6" required />
-            </div>
-            <div style="width:120px">
-              <label for="country">Currency</label>
-              <select id="country" name="country" aria-label="Currency">
-                <option value="ZAR">ZAR (R)</option>
-                <option value="USD">USD ($)</option>
-              </select>
-            </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:6px;">
+            <input id="tos" type="checkbox" required>
+            <label for="tos" style="font-size:13px;color:var(--muted);">I agree to the <a href="#" style="color:var(--accent-a);text-decoration:none;">Terms</a> & <a href="#" style="color:var(--accent-a);">Privacy</a></label>
           </div>
 
-          <div>
-            <label for="confirm">Confirm password</label>
-            <input id="confirm" name="confirm" type="password" placeholder="Repeat password" required />
+          <div class="submit-row">
+            <button type="submit" class="submit">Create account</button>
+            <button type="button" class="alt" onclick="location.href='login.html'">Have an account?</button>
           </div>
 
-          <div style="display:flex; gap:10px; align-items:center">
-            <input id="terms" type="checkbox" required />
-            <label for="terms" class="small">I agree to the <a href="#" onclick="return false">Terms &amp; Privacy</a></label>
+          <div class="divider">or sign up with</div>
+
+          <div class="socials">
+            <button type="button" class="social" onclick="alert('Continue with Google (demo)')">Google</button>
+            <button type="button" class="social" onclick="alert('Continue with Apple (demo)')">Apple</button>
           </div>
-
-          <div id="error" class="error" role="alert" aria-live="polite" style="display:none"></div>
-
-          <div class="actions">
-            <button type="submit" class="btn btn-primary" id="createBtn">Create account</button>
-            <a href="login.html" class="btn btn-ghost">Already have an account?</a>
-          </div>
-
-          <div class="foot-note small muted" style="margin-top:10px">This demo stores the account in your browser only (localStorage). For a production app use a secure backend and never store passwords in plaintext.</div>
         </form>
       </section>
 
-      <aside style="padding-left:12px">
-        <div class="card" style="padding:18px">
-          <h3 style="margin:0 0 8px">Why CashCall?</h3>
-          <p class="muted" style="margin:0 0 12px">Request money via phone number, split bills, and send reminders — all with a simple link for payers.</p>
-
-          <ul style="margin:0;padding-left:18px;color:#334155">
-            <li>Request by phone number (no merchant account)</li>
-            <li>Instant payment links (hosted by PSP)</li>
-            <li>Local support for ZAR and South African banks</li>
-          </ul>
-        </div>
-      </aside>
+      <footer>By creating an account you accept CashCall terms. <br>Need help? <a href="#" style="color:var(--accent-a);">Contact support</a></footer>
     </main>
-
-    <footer>
-      <div class="muted">© <span id="year"></span> CashCall</div>
-      <div class="socials" aria-label="Social links">
-        <a href="https://facebook.com/CashCall" target="_blank" rel="noopener" aria-label="CashCall on Facebook">
-          <!-- Facebook icon -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.33 2 2 6.48 2 12.07 2 17.06 5.66 21.17 10.44 22v-6.99H7.9v-3.01h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 3.01h-2.3V22C18.34 21.17 22 17.06 22 12.07z" fill="#1877F2"/>
-          </svg>
-        </a>
-        <a href="https://instagram.com/CashCall" target="_blank" rel="noopener" aria-label="CashCall on Instagram">
-          <!-- Instagram icon -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <linearGradient id="ig2" x1="0" x2="1"><stop offset="0" stop-color="#f58529"/><stop offset="0.5" stop-color="#dd2a7b"/><stop offset="1" stop-color="#515bd4"/></linearGradient>
-            <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z" stroke="url(#ig2)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="12" cy="12" r="3.2" stroke="url(#ig2)" stroke-width="1.6" fill="none"/>
-            <circle cx="17.4" cy="6.6" r="0.5" fill="url(#ig2)"/>
-          </svg>
-        </a>
-      </div>
-    </footer>
   </div>
 
   <script>
-    // Basic client-side mock signup (localStorage). Replace with real API calls later.
-    (function(){
-      const form = document.getElementById('signupForm');
-      const errorEl = document.getElementById('error');
-      const yearEl = document.getElementById('year');
-      yearEl.textContent = new Date().getFullYear();
+    // dynamic year placeholder (not shown here, but useful if added)
+    // country panel toggle
+    const countryBtn = document.getElementById('countryBtn');
+    const countryPanel = document.getElementById('countryPanel');
+    countryBtn.addEventListener('click', () => {
+      const open = countryPanel.style.display !== 'block';
+      countryPanel.style.display = open ? 'block' : 'none';
+      countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) document.getElementById('countrySelect').focus();
+    });
 
-      function showError(msg){
-        errorEl.style.display = 'block';
-        errorEl.textContent = msg;
+    // password show/hide
+    const pw = document.getElementById('password');
+    const toggle = document.getElementById('togglePw');
+    toggle.addEventListener('click', () => {
+      const isPwd = pw.type === 'password';
+      pw.type = isPwd ? 'text' : 'password';
+      toggle.textContent = isPwd ? '🙈' : '👁️';
+      toggle.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+    });
+
+    // simple demo validation + submit handler
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        alert('Please fill out required fields correctly.');
+        return;
       }
-
-      function clearError(){
-        errorEl.style.display = 'none';
-        errorEl.textContent = '';
-      }
-
-      function saveUser(user){
-        // NOTE: this is a demo only. Do NOT store plaintext passwords in production.
-        const users = JSON.parse(localStorage.getItem('cashcall_users') || '{}');
-        if(users[user.phone] || users[user.email]) return false;
-        users[user.phone] = user;
-        if(user.email) users[user.email] = user;
-        localStorage.setItem('cashcall_users', JSON.stringify(users));
-        return true;
-      }
-
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        clearError();
-        const fullname = document.getElementById('fullname').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const confirm = document.getElementById('confirm').value;
-        const terms = document.getElementById('terms').checked;
-
-        if(!fullname) return showError('Please enter your full name.');
-        if(!phone || !/^\+?\d{8,15}$/.test(phone)) return showError('Please enter a valid phone number including country code (e.g. +27...).');
-        if(password.length < 6) return showError('Password must be at least 6 characters.');
-        if(password !== confirm) return showError('Passwords do not match.');
-        if(!terms) return showError('You must agree to the Terms & Privacy.');
-
-        const user = { fullname, phone, email, password, createdAt: new Date().toISOString() };
-        const ok = saveUser(user);
-        if(!ok) return showError('An account with that phone or email already exists (demo).');
-
-        // Show success and redirect to login
-        alert('Account created (demo). You will be redirected to Login.');
-        window.location.href = 'login.html';
-      });
-    })();
+      // demo action — replace with real API call
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        phone: form.phone.value,
+      };
+      console.log('Signup data (demo):', data);
+      alert('Account created (demo). Check your email to verify.');
+      location.href = 'login.html';
+    });
   </script>
 </body>
 </html>
