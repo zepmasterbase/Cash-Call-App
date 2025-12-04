@@ -8,17 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* lighter theme variant for login */
-      --bg-1:#f3fbff;
-      --bg-2:#ffffff;
-      --card-bg: rgba(4,18,30,0.03);
-      --muted:#4b6272;
-      --accent-a:#00bcd4;
-      --accent-b:#8450ff;
-      --radius:12px;
+      --bg-1:#f3fbff; --bg-2:#ffffff;
+      --accent-a:#00bcd4; --accent-b:#8450ff; --muted:#4b6272;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden;}
+    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden; -webkit-text-size-adjust:100%;}
     body{
       font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
       background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
@@ -30,22 +24,13 @@
 
     header{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 12px; border-radius:12px;
-      backdrop-filter: blur(6px) saturate(110%);
-      background: rgba(255,255,255,0.85);
-      border:1px solid rgba(6,32,44,0.06);
-      box-shadow: 0 6px 20px rgba(6,32,44,0.04);
-      position:sticky; top:12px; z-index:40;
-      margin-bottom:14px;
+      padding:10px 12px; border-radius:12px; background: rgba(255,255,255,0.85);
+      border:1px solid rgba(6,32,44,0.06); box-shadow: 0 6px 20px rgba(6,32,44,0.04);
+      position:sticky; top:12px; z-index:40; margin-bottom:14px;
     }
     .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
-    .logo-wrap{ width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; }
-    .logo-svg{ width:40px; height:40px; display:block; }
+    .logo-wrap{ width:44px; height:44px; display:grid; place-items:center; flex:0 0 44px; border-radius:8px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; }
     .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:transparent; -webkit-background-clip:text; }
-
-    .hdr-actions{ display:flex; gap:8px; align-items:center; }
-    .icon-btn{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; border:0; background:transparent; color:var(--muted); cursor:pointer; }
-    .primary-btn{ padding:8px 12px; border-radius:10px; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; border:0; }
 
     main{ display:flex; flex-direction:column; gap:12px; }
     .hero-title{ font-family:Manrope; font-size:22px; margin:4px 0 0; color:#06202b; }
@@ -54,118 +39,278 @@
     .card{ margin-top:6px; border-radius:12px; padding:14px; background: rgba(255,255,255,0.95); border:1px solid rgba(6,32,44,0.04); box-shadow: 0 14px 40px rgba(4,18,30,0.04); }
     .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
     label{ font-size:13px; color:#274048; font-weight:600; }
-    input[type="email"], input[type="password"]{ padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; font-size:15px; color:#06202b; }
+    input[type="text"], input[type="email"], input[type="password"], select{
+      padding:12px; border-radius:10px; border:1px solid rgba(6,32,44,0.06); background:transparent; font-size:15px; color:#06202b;
+    }
 
-    .small{ color:var(--muted); font-size:12px; }
+    .small{ color:var(--muted); font-size:13px; }
     .actions-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:6px; }
     .submit{ width:100%; padding:12px; border-radius:10px; border:0; font-weight:800; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; cursor:pointer; margin-top:8px; }
-
     .secondary{ border:1px solid rgba(6,32,44,0.06); padding:10px; border-radius:10px; background:transparent; color:var(--muted); font-weight:700; width:100%; }
+    .link-btn{ background:transparent; border:0; color:var(--accent-a); font-weight:700; cursor:pointer; padding:0; }
 
-    footer{ margin-top:12px; color:var(--muted); text-align:center; font-size:13px; }
+    footer{ margin-top:14px; color:var(--muted); text-align:center; font-size:13px; }
+
     @media (max-width:380px){ .hero-title{ font-size:20px } }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header role="banner" aria-label="Top navigation">
+    <header>
       <div class="brand">
-        <div class="logo-wrap" aria-hidden="true">
-          <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CashCall logo">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#00bcd4"/><stop offset="100%" stop-color="#8450ff"/></linearGradient>
-            </defs>
-            <g transform="translate(10,10)"><path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.16"/><path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></g>
-          </svg>
+        <div class="logo-wrap" aria-hidden="true">C</div>
+        <div>
+          <div class="small">Welcome back</div>
+          <div class="title">CashCall</div>
         </div>
-        <div class="title">CashCall</div>
       </div>
 
-      <div class="hdr-actions">
-        <button id="countryBtn" class="icon-btn" aria-expanded="false" aria-controls="countryPanel" aria-label="Choose country">🌍</button>
-        <button class="primary-btn" onclick="location.href='signup.html'">Sign up</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="secondary" onclick="location.href='signup.html'" aria-label="Sign up">Sign up</button>
       </div>
     </header>
 
-    <div id="countryPanel" style="display:none; margin-bottom:8px; gap:8px;">
-      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Region</label>
-      <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(6,32,44,0.06);width:100%;background:transparent;color:#06202b;font-weight:700;">
-        <option value="za">South Africa</option>
-        <option value="gh">Ghana</option>
-        <option value="ng">Nigeria</option>
-        <option value="uk">United Kingdom</option>
-        <option value="us">United States</option>
-      </select>
-    </div>
-
     <main>
       <div>
-        <div class="hero-title">Welcome back</div>
-        <p class="lead">Log in to manage your payment requests and receive funds securely.</p>
+        <div class="hero-title">Log in to CashCall</div>
+        <p class="lead">Access your wallet and payment requests.</p>
       </div>
 
       <section class="card" aria-labelledby="login-form">
         <form id="loginForm" autocomplete="on" novalidate>
           <div class="form-row">
-            <label for="email">Email or phone</label>
-            <input id="email" name="identifier" type="email" placeholder="you@example.com" required>
-            <div class="small">Or use the phone number linked to your account.</div>
+            <label for="identifier">Email or phone</label>
+            <input id="identifier" name="identifier" type="text" placeholder="you@example.com or +234 80 0000 0000" required aria-describedby="idHint">
+            <div id="idHint" class="small">You can use the email or phone tied to your account.</div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row pw-toggle">
             <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Your password" required>
+            <input id="password" name="password" type="password" placeholder="Your password" required aria-describedby="pwHint">
+            <button type="button" id="togglePw" aria-label="Show password" style="position:relative;left:auto;right:0;margin-top:-36px;background:none;border:0;cursor:pointer;">👁️</button>
+            <div id="pwHint" class="small">Use the password you created at signup.</div>
           </div>
 
           <div class="actions-row">
-            <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="remember"> <span class="small">Remember me</span></label>
-            <a href="#" style="color:var(--accent-a);font-weight:700;font-size:13px;">Forgot?</a>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input id="remember" type="checkbox" checked aria-label="Remember me"> <span class="small">Remember me</span>
+            </label>
+            <button type="button" class="link-btn" onclick="alert('Password reset flow (demo)')">Forgot?</button>
           </div>
 
-          <button type="submit" class="submit">Log in</button>
+          <button type="submit" class="submit" id="submitBtn">Log in</button>
 
-          <div style="margin-top:10px;" class="divider">or continue with</div>
+          <div style="margin-top:12px;text-align:center;">
+            <div class="small">or continue with</div>
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Google (demo)')">Google</button>
+              <button type="button" class="secondary" style="flex:1" onclick="alert('Continue with Apple (demo)')">Apple</button>
+            </div>
 
-          <div style="display:flex;gap:10px;margin-top:8px;">
-            <button type="button" class="secondary" onclick="alert('Continue with Google (demo)')">Google</button>
-            <button type="button" class="secondary" onclick="alert('Continue with Apple (demo)')">Apple</button>
-          </div>
-
-          <div style="margin-top:10px;text-align:center;">
-            <span class="small">Don't have an account?</span>
-            <button type="button" class="secondary" style="margin-top:8px;" onclick="location.href='signup.html'">Create account</button>
+            <div style="margin-top:10px;">
+              <span class="small">Don't have an account?</span>
+              <button type="button" class="secondary" style="margin-top:8px;" onclick="location.href='signup.html'">Create account</button>
+            </div>
           </div>
         </form>
       </section>
-    </main>
 
-    <footer>© <span id="year"></span> CashCall — Trusted local payments</footer>
+      <footer>© <span id="year"></span> CashCall</footer>
+    </main>
   </div>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    /***************************************************************
+     * Simple client-side session strategy (demo)
+     *
+     * - Remember checked -> persist session to localStorage
+     * - Not checked     -> persist session to sessionStorage
+     *
+     * Protected pages should call readSession() to check token.
+     *
+     * IMPORTANT:
+     * - Replace the demoAuth() block with a real server call (fetch()).
+     * - For production use httpOnly secure cookies and server-side validation.
+     ***************************************************************/
 
-    // country panel toggle
-    const countryBtn = document.getElementById('countryBtn');
-    const countryPanel = document.getElementById('countryPanel');
-    countryBtn.addEventListener('click', () => {
-      const open = countryPanel.style.display !== 'block';
-      countryPanel.style.display = open ? 'block' : 'none';
-      countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) document.getElementById('countrySelect').focus();
+    const TOKEN_KEY = 'cashcall_token';
+    const USER_KEY = 'cashcall_user';
+    const WALLET_KEY = 'cashcall_wallet';
+    const EXPIRY_KEY = 'cashcall_token_expiry_ms';
+
+    const NON_REMEMBER_TTL_MS = 24 * 60 * 60 * 1000; // optional TTL for sessionStorage (demo)
+
+    // helper: create demo token — replace with server returned token
+    function makeToken() {
+      return 'tok_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    // read session from persistent or session storage
+    function readSession() {
+      // prefer localStorage (persistent)
+      let token = localStorage.getItem(TOKEN_KEY);
+      let userJSON = localStorage.getItem(USER_KEY);
+      let walletJSON = localStorage.getItem(WALLET_KEY);
+      let expiry = localStorage.getItem(EXPIRY_KEY);
+
+      if (!token) {
+        token = sessionStorage.getItem(TOKEN_KEY);
+        userJSON = sessionStorage.getItem(USER_KEY);
+        walletJSON = sessionStorage.getItem(WALLET_KEY);
+        expiry = sessionStorage.getItem(EXPIRY_KEY);
+      }
+
+      if (!token || !userJSON || !walletJSON) return null;
+
+      if (expiry && Number(expiry) < Date.now()) {
+        // expired
+        clearAllSession();
+        return null;
+      }
+
+      try {
+        return {
+          token,
+          user: JSON.parse(userJSON),
+          wallet: JSON.parse(walletJSON)
+        };
+      } catch (err) {
+        clearAllSession();
+        return null;
+      }
+    }
+
+    // clear both storages
+    function clearAllSession() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(WALLET_KEY);
+      localStorage.removeItem(EXPIRY_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(WALLET_KEY);
+      sessionStorage.removeItem(EXPIRY_KEY);
+    }
+
+    // persist session to the chosen storage
+    function persistSession({ token, user, wallet, remember }) {
+      const target = remember ? localStorage : sessionStorage;
+      const other = remember ? sessionStorage : localStorage;
+
+      // clear other storage to avoid duplication
+      other.removeItem(TOKEN_KEY);
+      other.removeItem(USER_KEY);
+      other.removeItem(WALLET_KEY);
+      other.removeItem(EXPIRY_KEY);
+
+      target.setItem(TOKEN_KEY, token);
+      target.setItem(USER_KEY, JSON.stringify(user));
+      target.setItem(WALLET_KEY, JSON.stringify(wallet));
+
+      if (!remember) {
+        const expiry = Date.now() + NON_REMEMBER_TTL_MS;
+        target.setItem(EXPIRY_KEY, String(expiry));
+      } else {
+        target.removeItem(EXPIRY_KEY);
+      }
+    }
+
+    // Auto-redirect to dashboard if already logged in
+    (function autoRedirectIfLoggedIn(){
+      const s = readSession();
+      if (s && s.token) {
+        // Optionally verify token with server here before redirecting
+        window.location.href = 'dashboard.html';
+      }
+    })();
+
+    // form logic
+    const form = document.getElementById('loginForm');
+    const identifierEl = document.getElementById('identifier');
+    const passwordEl = document.getElementById('password');
+    const rememberEl = document.getElementById('remember');
+    const togglePw = document.getElementById('togglePw');
+    const yearEl = document.getElementById('year');
+
+    yearEl.textContent = new Date().getFullYear();
+
+    // password toggle
+    togglePw.addEventListener('click', () => {
+      const isPwd = passwordEl.type === 'password';
+      passwordEl.type = isPwd ? 'text' : 'password';
+      togglePw.textContent = isPwd ? '🙈' : '👁️';
+      togglePw.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
     });
 
-    // simple demo login handler
-    const login = document.getElementById('loginForm');
-    login.addEventListener('submit', (e) => {
+    // DEMO AUTH: Replace this function with a call to your authentication endpoint.
+    // Example (server):
+    // const resp = await fetch('/api/auth/login', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({identifier,password})});
+    // const payload = await resp.json(); // { token, user, wallet }
+    // then persistSession(payload...).
+    async function demoAuth(identifier, password) {
+      // fake delay to simulate network
+      await new Promise(r => setTimeout(r, 450));
+
+      // simple demo validation — replace with server logic
+      if (!identifier || !password) throw new Error('Invalid credentials');
+
+      const token = makeToken();
+      const user = {
+        id: 'user_' + Math.random().toString(36).slice(2),
+        name: identifier.includes('@') ? identifier.split('@')[0] : identifier,
+        email: identifier.includes('@') ? identifier.toLowerCase() : '',
+        phone: identifier.startsWith('+') ? identifier : '',
+        country: 'ng' // demo default; server should return actual country
+      };
+      const wallet = {
+        userId: user.id,
+        currency: 'NGN',  // server would return preferred currency
+        balance: 0.00
+      };
+
+      return { token, user, wallet };
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!login.checkValidity()) {
-        alert('Please fill the form correctly.');
+      if (!form.checkValidity()) {
+        form.reportValidity();
         return;
       }
-      alert('Logged in (demo).');
-      // replace with real navigation
-      console.log('Login demo:', { id: login.identifier.value });
+
+      const identifier = identifierEl.value.trim();
+      const password = passwordEl.value;
+      const remember = rememberEl.checked;
+
+      // UI disable while processing
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        // === Replace demoAuth with your real API call ===
+        // e.g. const payload = await realLogin({ identifier, password });
+        const payload = await demoAuth(identifier, password);
+
+        // persist session according to remember flag
+        persistSession({ token: payload.token, user: payload.user, wallet: payload.wallet, remember });
+
+        // redirect to dashboard (protected page)
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        console.error('login error', err);
+        alert(err.message || 'Login failed — please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log in';
+      }
+    });
+
+    // Optional: respond to storage events (user logged out in another tab)
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === TOKEN_KEY && ev.newValue == null) {
+        // token removed elsewhere — optionally show UI change
+      }
     });
   </script>
 </body>
