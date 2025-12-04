@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CashCall — Pay / Scan</title>
+  <meta name="description" content="Pay a CashCall request or use scan-to-pay (demo)" />
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f4f8ff;color:#07112a}
+    .wrap{max-width:920px;margin:0 auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .logo{width:44px;height:44;border-radius:10px;background:linear-gradient(180deg,#2563eb,#1e40af);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(6,30,63,0.04);box-shadow:0 8px 30px rgba(8,30,63,0.04)}
+    .muted{color:#64748b}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    input,button,select{padding:12px;border-radius:10px;border:1px solid #e6eefc;font-size:15px}
+    .primary{background:#2563eb;color:#fff;border:0;font-weight:800}
+    .ghost{background:transparent;border:1px solid #e6eefc}
+    .center{display:flex;align-items:center;justify-content:center}
+    .qr{width:220px;height:220px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfdff);display:flex;align-items:center;justify-content:center;border:1px solid rgba(6,30,63,0.04)}
+    .small{font-size:13px;color:#64748b}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="dashboard.html" aria-label="Back"><div class="logo">CC</div></a>
+        <div>
+          <h1 style="margin:0">Pay & Scan</h1>
+          <div class="muted">Scan a request QR or pay via a request link (demo)</div>
+        </div>
+      </div>
+
+      <nav style="display:flex;gap:8px">
+        <a href="dashboard.html" class="ghost" style="padding:10px 12px;border-radius:10px">Dashboard</a>
+        <a href="request.html" class="ghost" style="padding:10px 12px;border-radius:10px">Create Request</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2 style="margin:0 0 8px">Pay a Request</h2>
+        <div class="muted">If you received a CashCall link, paste the `req` id from its query string or scan the generated QR below.</div>
+
+        <form id="payForm" style="margin-top:12px">
+          <label>Request id (from link)</label>
+          <input id="reqId" type="text" placeholder="e.g. rabc123" />
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="button" id="loadReq" class="primary">Load Request</button>
+            <button type="button" id="simulateScan" class="ghost">Simulate Scan</button>
+          </div>
+        </form>
+
+        <div id="reqDetails" style="margin-top:12px;display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Request to pay</div>
+              <div style="font-weight:800;font-size:18px" id="rTo">—</div>
+              <div class="small muted" id="rNote">—</div>
+            </div>
+            <div style="text-align:right">
+              <div class="small">Amount</div>
+              <div style="font-weight:900;font-size:20px">R <span id="rAmt">0.00</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="payNow" class="primary">Pay Now (simulate)</button>
+            <button id="backBtn" class="ghost">Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card center" style="flex-direction:column;gap:12px">
+          <h3 style="margin:0">Generate QR for a Request</h3>
+          <div class="small muted">Create a QR for a request ID that a payer can scan</div>
+
+          <div style="margin-top:8px">
+            <input id="qrReqId" placeholder="Request id (e.g. rabc123)" />
+            <div style="height:8px"></div>
+            <button id="genQr" class="primary">Generate QR</button>
+          </div>
+
+          <div id="qrBox" style="margin-top:12px" class="center">
+            <div class="qr" id="qrPreview">QR</div>
+          </div>
+
+          <div style="margin-top:12px" class="small muted">In this demo the QR is a visual representation only — scanning is simulated by entering the request id in the Pay form.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0 0 8px">Quick Actions</h3>
+          <button id="listRequests" class="ghost" style="width:100%;margin-bottom:8px">List Recent Requests</button>
+          <div id="recentList" class="small muted">—</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px;text-align:center;color:#94a3b8">© <span id="year"></span> CashCall — Demo</footer>
+  </div>
+
+  <div id="toast" style="position:fixed;right:18px;bottom:18px;background:#07112a;color:#fff;padding:12px 14px;border-radius:10px;display:none"></div>
+
+  <script>
+    const STORAGE_KEY = 'cashcall_requests_v2';
+    const SESSION_KEY = 'cashcall_session_v2';
+    const $ = s => document.querySelector(s);
+    function showToast(msg,t=2400){ const el=$('#toast'); el.textContent=msg; el.style.display='block'; clearTimeout(el._to); el._to=setTimeout(()=>el.style.display='none',t); }
+    function loadRequests(){return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}
+    function saveRequests(a){localStorage.setItem(STORAGE_KEY, JSON.stringify(a))}
+    function getSession(){return JSON.parse(localStorage.getItem(SESSION_KEY)||'{}')}
+    function saveSession(s){localStorage.setItem(SESSION_KEY, JSON.stringify(s))}
+    function fmt(v){return Number(v||0).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      $('#year').textContent = new Date().getFullYear();
+      if(!localStorage.getItem(SESSION_KEY)){ localStorage.setItem(SESSION_KEY, JSON.stringify({fullname:'Demo User',phone:'+27 82 000 0000',balance:420.00})); }
+      renderRecent();
+
+      // If a ?req=... param exists in URL, prefill
+      const params = new URLSearchParams(location.search);
+      const pre = params.get('req');
+      if(pre){ $('#reqId').value = pre; loadRequestById(pre); showToast('Loaded request id from link (demo)'); }
+
+      $('#loadReq').addEventListener('click', ()=>{ const id = $('#reqId').value.trim(); if(!id) return showToast('Enter a request id'); loadRequestById(id); });
+      $('#simulateScan').addEventListener('click', ()=>{ const id = prompt('Enter request id to simulate scanning:'); if(id) loadRequestById(id); });
+
+      $('#genQr').addEventListener('click', ()=>{
+        const id = $('#qrReqId').value.trim();
+        if(!id) return showToast('Enter a request id to generate QR');
+        // In demo we render the id text inside the QR box
+        $('#qrPreview').textContent = id;
+        showToast('QR generated (demo). Scanning is simulated by entering id in Pay form.');
+      });
+
+      $('#listRequests').addEventListener('click', renderRecent);
+
+      $('#backBtn').addEventListener('click', ()=>{
+        $('#reqDetails').style.display='none'; $('#reqId').value=''; 
+      });
+
+      $('#payNow').addEventListener('click', ()=>{
+        // simulate payment: mark request paid and add to demo wallet balance
+        const id = $('#reqDetails').dataset.id;
+        if(!id) return showToast('No request loaded');
+        const reqs = loadRequests();
+        const idx = reqs.findIndex(r=>r.id===id);
+        if(idx === -1) return showToast('Request not found');
+        if(reqs[idx].status === 'paid') return showToast('Already paid');
+        reqs[idx].status = 'paid'; reqs[idx].paidAt = Date.now(); saveRequests(reqs);
+        // credit demo wallet
+        const s = getSession(); s.balance = Number((Number(s.balance||0) - Number(reqs[idx].amount)).toFixed(2)); // payer pays -> reduce his demo balance (simulate)
+        // For purchaser demo, we might deduct; for recipient demo balance increase could be handled elsewhere
+        saveSession(s);
+        $('#reqDetails').style.display = 'none';
+        renderRecent();
+        showToast('Payment simulated — request marked paid.');
+      });
+    });
+
+    function loadRequestById(id){
+      const list = loadRequests();
+      const r = list.find(x => x.id === id);
+      if(!r){ showToast('Request id not found'); return; }
+      $('#reqDetails').style.display = 'block';
+      $('#rTo').textContent = r.toName || r.toPhone;
+      $('#rNote').textContent = r.note || '—';
+      $('#rAmt').textContent = fmt(r.amount);
+      $('#reqDetails').dataset.id = r.id;
+    }
+
+    function renderRecent(){
+      const list = loadRequests();
+      const out = $('#recentList');
+      if(!list.length){ out.textContent = 'No requests available'; return }
+      out.innerHTML = '<ul style="padding-left:18px;margin:0">' + list.slice(0,6).map(r=>`<li style="margin-bottom:8px">${r.id} • R ${fmt(r.amount)} • ${r.toPhone} • ${r.status}</li>`).join('') + '</ul>';
+    }
+  </script>
+</body>
+</html>
