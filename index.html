@@ -1,259 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>CashCall — Request Money</title>
-  <meta name="description" content="CashCall — request payments quickly and securely in South Africa, Ghana & Nigeria." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
-
-  <style>
-    /* Mobile-first, single-column — no horizontal scroll */
-    :root{
-      --bg-1:#071428; --bg-2:#071a2a;
-      --accent-a:#00d4ff; --accent-b:#7b39ff;
-      --muted:#9fb3c6; --glass:rgba(255,255,255,0.03);
-      --radius:14px;
-    }
-
-    /* reset & safety */
-    *{box-sizing:border-box}
-    html,body{height:100%; width:100%; margin:0; padding:0; overflow-x:hidden; -webkit-text-size-adjust:100%;}
-    body{
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
-      color:#e8f9ff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      line-height:1.4;
-      padding:18px 16px;
-    }
-
-    /* container (constrained width for phones) */
-    .wrap{ max-width:420px; margin:0 auto; }
-
-    /* CLEAN, GLASS-STYLE HEADER (single row, no cluster) */
-    header {
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; padding:10px 12px; border-radius:14px;
-      backdrop-filter: blur(8px) saturate(120%);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 30px rgba(4,12,20,0.45);
-      position:sticky; top:12px; z-index:40;
-    }
-
-    /* brand area: small logo + wordmark */
-    .brand{ display:flex; gap:10px; align-items:center; min-width:0; }
-    .logo-wrap{ width:44px; height:44px; position:relative; display:grid; place-items:center; flex:0 0 44px; }
-    .logo-svg{ width:40px; height:40px; display:block; }
-    .title{ font-family:Manrope,Inter; font-weight:800; font-size:16px; color:transparent; -webkit-background-clip:text;
-      background-image:linear-gradient(90deg,var(--accent-a),var(--accent-b)); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-    /* right-side actions simplified: only two icons (country + auth) — no cluster */
-    .hdr-actions { display:flex; gap:8px; align-items:center; }
-    .icon-btn {
-      width:40px; height:40px; border-radius:10px; display:grid; place-items:center; border:0;
-      background: rgba(255,255,255,0.02); color:var(--muted); font-weight:700; cursor:pointer;
-    }
-    .primary-btn {
-      padding:8px 12px; border-radius:10px; background:linear-gradient(90deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:800; border:0;
-      font-size:14px;
-    }
-
-    /* collapsible country panel (keeps header uncluttered) */
-    .panel { margin-top:10px; display:none; gap:8px; flex-direction:column; }
-    .panel.open { display:flex; }
-
-    /* HERO - single col, fits screen */
-    .hero { margin-top:14px; display:flex; flex-direction:column; gap:14px; align-items:stretch; }
-    .meta-pill{ align-self:flex-start; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.02); color:var(--muted); font-weight:600; font-size:13px; border:1px solid rgba(255,255,255,0.03); }
-    h2{ margin:0; font-family:Manrope; font-size:28px; line-height:1.06; color:#f6fbff; letter-spacing:-0.4px; }
-    p.lead{ margin:6px 0 0; color:var(--muted); font-size:14px; }
-
-    /* CTA row — single-row buttons that fit width */
-    .cta-row{ display:flex; gap:10px; margin-top:12px; }
-    .cta-row .primary-btn{ flex:1 }
-    .cta-row .ghost { flex:1; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); font-weight:700; border-radius:10px; padding:8px 12px; }
-
-    /* hero card / phone preview - responsive */
-    .hero-card{ margin-top:6px; border-radius:14px; padding:14px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 20px 50px rgba(2,6,12,0.6); }
-    .phone { width:100%; border-radius:12px; padding:12px; background:rgba(255,255,255,0.01); display:flex; flex-direction:column; gap:10px; }
-    .balance { font-size:22px; font-weight:800; color:#eaffff; font-family:Manrope; }
-    .phone-row { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
-    .small { color:var(--muted); font-size:12px }
-
-    /* features — stacked, full width */
-    .features{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
-    .feature{ display:flex; gap:10px; align-items:center; padding:12px; border-radius:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); }
-    .ico{ width:44px; height:44px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,var(--accent-a),var(--accent-b)); color:#021026; font-weight:900; font-size:20px; }
-
-    /* footer simplified */
-    footer{ margin-top:18px; color:var(--muted); font-size:13px; display:flex; justify-content:space-between; gap:8px; align-items:center; flex-wrap:wrap; }
-
-    /* micro interactions: subtle transforms (touch-friendly) */
-    button:active{ transform: translateY(1px); }
-    .icon-btn:hover, .primary-btn:hover{ filter:brightness(1.06) }
-
-    /* accessibility / small screens */
-    @media (max-width:380px){
-      body{padding:14px 10px}
-      h2{ font-size:24px }
-      .title{ font-size:15px }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CashCall — Request Money From Anyone</title>
+<meta name="description" content="Request money from anyone using only their phone number.">
+<style>
+:root{--bg:#07111f;--card:#0f1c2d;--green:#19d37e;--text:#eef5fb;--muted:#a8b8c8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+.hero{min-height:100vh;position:relative;overflow:hidden;background:
+radial-gradient(circle at 20% 20%,rgba(25,211,126,.18),transparent 30%),
+radial-gradient(circle at 80% 10%,rgba(0,160,255,.15),transparent 30%),
+linear-gradient(135deg,#07111f,#0d1830,#07111f)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;filter:blur(70px);animation:float 12s ease-in-out infinite}
+.hero:before{width:240px;height:240px;background:#19d37e22;left:-40px;top:80px}
+.hero:after{width:300px;height:300px;background:#00bfff18;right:-60px;bottom:60px}
+@keyframes float{50%{transform:translateY(-20px) translateX(10px)}}
+header{position:fixed;top:0;left:0;right:0;padding:16px 6%;display:flex;justify-content:space-between;align-items:center;background:#07111fcc;backdrop-filter:blur(12px);z-index:9}
+.logo{font-weight:800;font-size:1.6rem}.logo span{color:var(--green)}
+nav{display:flex;gap:18px;align-items:center}
+nav a{color:var(--muted);text-decoration:none}
+.btn{padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:700}
+.outline{border:1px solid #335;color:#fff}
+.primary{background:var(--green);color:#04110b}
+.wrap{max-width:1200px;margin:auto;padding:120px 6% 80px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+h1{font-size:clamp(2.8rem,6vw,5rem);line-height:1.02;margin:0 0 20px}
+.lead{font-size:1.15rem;color:var(--muted);max-width:600px}
+.actions{display:flex;gap:16px;flex-wrap:wrap;margin-top:30px}
+.phone{background:#111827;border:1px solid #223;border-radius:34px;padding:18px;max-width:330px;margin:auto;box-shadow:0 30px 80px #0008}
+.screen{background:#fff;color:#111;border-radius:22px;padding:18px}
+.field{background:#eef3f7;padding:12px;border-radius:10px;margin:10px 0}
+.pay{background:#dcfce7;color:#166534;padding:14px;border-radius:12px;font-weight:700;text-align:center;margin-top:16px}
+section{padding:80px 6%;max-width:1200px;margin:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.card{background:var(--card);padding:22px;border-radius:18px;border:1px solid #1e3048}
+h2{text-align:center;font-size:2.2rem}
+footer{padding:30px 6%;text-align:center;color:var(--muted);border-top:1px solid #20324a}
+@media(max-width:900px){
+.wrap{grid-template-columns:1fr;text-align:center}
+nav a.hide{display:none}
+.actions{justify-content:center}
+}
+</style>
 </head>
 <body>
-  <div class="wrap" role="document">
+<div class="hero">
+<header>
+<div class="logo">Cash<span>Call</span></div>
+<nav>
+<a class="hide" href="#features">Features</a>
+<a class="hide" href="#works">How it Works</a>
+<a class="hide" href="#faq">FAQ</a>
+<a class="btn outline" href="auth.html">Log In</a>
+<a class="btn primary" href="auth.html">Sign Up</a>
+</nav>
+</header>
 
-    <!-- HEADER: clean, single-row -->
-    <header role="banner" aria-label="Top navigation">
-      <div class="brand" aria-hidden="false">
-        <div class="logo-wrap" aria-hidden="true">
-          <!-- compact neon 3D C (SVG scales responsively) -->
-          <svg class="logo-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CashCall logo">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1">
-                <stop offset="0%" stop-color="#00d4ff" />
-                <stop offset="100%" stop-color="#7b39ff" />
-              </linearGradient>
-              <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.8" result="b" />
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <g transform="translate(10,10)">
-              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.18" transform="translate(3,4) scale(0.95)"/>
-              <path d="M50 10 C30 10 14 26 14 46 C14 66 30 82 50 82 C70 82 86 66 86 46 C86 36 82 27 76 20" fill="none" stroke="url(#g1)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#softGlow)"/>
-            </g>
-          </svg>
-        </div>
+<div class="wrap">
+<div>
+<h1>Request Money From Anyone.<br>Just Their Phone Number.</h1>
+<p class="lead">Create a secure payment request in under 30 seconds. Share it through WhatsApp or SMS. Your payer doesn't need an account or an app.</p>
+<div class="actions">
+<a class="btn primary" href="auth.html">Request Money</a>
+<a class="btn outline" href="#works">See How It Works</a>
+</div>
+</div>
+<div class="phone">
+<div class="screen">
+<h3>Create Payment Request</h3>
+<div class="field">📱 +27 82 123 4567</div>
+<div class="field">💵 R850.00</div>
+<div class="field">📝 Design Deposit</div>
+<div class="pay">✔ Payment Received +R850</div>
+</div>
+</div>
+</div>
+</div>
 
-        <div class="title" aria-label="CashCall">CashCall</div>
-      </div>
+<section id="features">
+<h2>Why CashCall?</h2>
+<div class="grid">
+<div class="card"><h3>⚡ Fast</h3><p>Create requests in seconds.</p></div>
+<div class="card"><h3>📲 No App Needed</h3><p>Payers simply tap the secure payment link.</p></div>
+<div class="card"><h3>🌍 Built for Africa</h3><p>Ready for African payment providers and global growth.</p></div>
+<div class="card"><h3>🔒 Secure</h3><p>Designed for trusted payment integrations.</p></div>
+</div>
+</section>
 
-      <div class="hdr-actions">
-        <!-- country selector tucked into a compact button (clean header) -->
-        <button id="countryBtn" class="icon-btn" aria-expanded="false" aria-controls="countryPanel" aria-label="Choose country">🌍</button>
+<section id="works">
+<h2>How It Works</h2>
+<div class="grid">
+<div class="card"><h3>1. Enter Phone Number</h3><p>Choose the amount and reason.</p></div>
+<div class="card"><h3>2. Share Link</h3><p>WhatsApp, SMS or copy the payment link.</p></div>
+<div class="card"><h3>3. Get Paid</h3><p>The recipient pays securely online.</p></div>
+</div>
+</section>
 
-        <!-- simple auth CTA (primary) -->
-        <button class="primary-btn" onclick="location.href='signup.html'">Sign up</button>
-      </div>
-    </header>
+<section id="faq">
+<h2>Frequently Asked Questions</h2>
+<div class="grid">
+<div class="card"><h3>Do recipients need an account?</h3><p>No.</p></div>
+<div class="card"><h3>Can overseas users pay?</h3><p>Yes, when supported by the connected payment provider.</p></div>
+<div class="card"><h3>Is it mobile friendly?</h3><p>Yes. The site is responsive for phones, tablets and desktops.</p></div>
+</div>
+</section>
 
-    <!-- collapsible panel under header (opens on tap) -->
-    <div id="countryPanel" class="panel" aria-hidden="true">
-      <label style="font-size:13px;color:var(--muted);">Region</label>
-      <select id="countrySelect" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6f6ff;font-weight:700;">
-        <option value="za">South Africa</option>
-        <option value="gh">Ghana</option>
-        <option value="ng">Nigeria</option>
-        <option value="uk">United Kingdom</option>
-        <option value="us">United States</option>
-      </select>
-      <div style="display:flex;gap:8px;">
-        <button class="ghost" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);" onclick="document.getElementById('countryPanel').classList.remove('open');document.getElementById('countryBtn').focus();">Done</button>
-        <button class="primary-btn" style="flex:1;" onclick="alert('Saved (demo)');document.getElementById('countryPanel').classList.remove('open');">Save</button>
-      </div>
-    </div>
+<section style="text-align:center">
+<h2>Ready to Get Paid Faster?</h2>
+<p class="lead" style="margin:auto">Join CashCall and send your first payment request today.</p>
+<div class="actions" style="justify-content:center">
+<a class="btn primary" href="auth.html">Create Free Account</a>
+</div>
+</section>
 
-    <!-- HERO -->
-    <main class="hero" role="main">
-      <div class="meta-pill" aria-hidden="true">Built for students, merchants & everyday payments</div>
-
-      <h2>Request payments in seconds — local rails, global reach.</h2>
-      <p class="lead">Send secure payment links via SMS, WhatsApp or QR. Support for cards, instant EFT and major local gateways across South Africa, Ghana & Nigeria.</p>
-
-      <div class="cta-row" aria-hidden="false">
-        <button class="ghost" onclick="location.href='login.html'">Log in</button>
-        <button class="primary-btn" onclick="location.href='signup.html'">Sign up</button>
-      </div>
-
-      <div class="hero-card" aria-hidden="false">
-        <div class="phone" role="img" aria-label="CashCall phone preview">
-          <div class="phone-row">
-            <div>
-              <div class="small">Available balance</div>
-              <div class="balance">R 1,240.00</div>
-              <div class="small">Card • Instant EFT • Mobile Wallets</div>
-            </div>
-
-            <div style="text-align:right;">
-              <div class="small">Today</div>
-              <div style="font-weight:800;margin-top:6px;color:var(--accent-a)">+ R 280.00</div>
-            </div>
-          </div>
-
-          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:8px 0">
-
-          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;">
-            <div style="flex:1">
-              <div class="small">Recent</div>
-              <div style="margin-top:6px;font-size:14px;color:#eafaff">• Payment received • R 180.00</div>
-              <div style="font-size:12px;color:var(--muted)">2:34 PM</div>
-            </div>
-
-            <div style="display:flex;gap:8px;flex-direction:column;">
-              <button style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafaff;font-weight:700;" onclick="alert('Send (demo)')">Send</button>
-              <button style="padding:8px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));color:#021026;font-weight:800;" onclick="location.href='signup.html'">Request</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="features" aria-hidden="false">
-        <div class="feature">
-          <div class="ico">🔗</div>
-          <div>
-            <strong style="display:block;color:#eafaff">One-tap links</strong>
-            <div style="color:var(--muted);font-size:13px">Instant payment links that work across devices and apps.</div>
-          </div>
-        </div>
-
-        <div class="feature">
-          <div class="ico">🧾</div>
-          <div>
-            <strong style="display:block;color:#eafaff">Split & Remind</strong>
-            <div style="color:var(--muted);font-size:13px">Group splits, scheduled reminders and polite nudges.</div>
-          </div>
-        </div>
-
-        <div class="feature">
-          <div class="ico">🔒</div>
-          <div>
-            <strong style="display:block;color:#eafaff">Secure rails</strong>
-            <div style="color:var(--muted);font-size:13px">PCI-ready flows and local payment gateway support.</div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <footer role="contentinfo">
-      <div>© <span id="year"></span> CashCall</div>
-      <div style="color:var(--muted)">Twitter • Instagram</div>
-    </footer>
-  </div>
-
-  <script>
-    // dynamic year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // country panel toggle (keeps header minimal)
-    const countryBtn = document.getElementById('countryBtn');
-    const countryPanel = document.getElementById('countryPanel');
-    countryBtn.addEventListener('click', () => {
-      const open = countryPanel.classList.toggle('open');
-      countryBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      countryPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      if (open) {
-        // focus first control for accessibility
-        const sel = document.getElementById('countrySelect');
-        setTimeout(()=> sel && sel.focus(), 120);
-      } else countryBtn.focus();
-    });
-
-    // prevent accidental sideways scroll if content ever grows
-    window.addEventListener('resize', () => { document.documentElement.style.overflowX = 'hidden'; });
-  </script>
+<footer>© 2026 CashCall • Built for Africa • Ready for the World</footer>
 </body>
 </html>
